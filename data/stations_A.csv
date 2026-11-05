@@ -1,0 +1,13 @@
+code,nom,wilaya,zone,latitude,longitude,altitude
+BJ-01,Station Béjaïa 1,Béjaïa,1,36.763943,5.022501,84.0
+BJ-02,Station Béjaïa 2,Béjaïa,1,36.722321,5.093647,148.27
+BJ-03,Station Béjaïa 3,Béjaïa,1,36.789218,5.028694,107.51
+JJ-01,Station Jijel 1,Jijel,1,36.77298,5.741864,45.86
+JJ-02,Station Jijel 2,Jijel,1,36.772654,5.739884,68.98
+JJ-03,Station Jijel 3,Jijel,1,36.824494,5.742044,59.28
+ST-01,Station Sétif 1,Sétif,2,36.220943,5.36065,1128.93
+ST-02,Station Sétif 2,Sétif,2,36.209814,5.394025,1024.88
+ST-03,Station Sétif 3,Sétif,2,36.235721,5.393659,1014.84
+BBA-01,Station Bordj Bou Arréridj 1,Bordj Bou Arréridj,2,36.009672,4.794749,916.6
+BBA-02,Station Bordj Bou Arréridj 2,Bordj Bou Arréridj,2,36.080713,4.782973,905.8
+BBA-03,Station Bordj Bou Arréridj 3,Bordj Bou Arréridj,2,36.097312,4.747853,908.33

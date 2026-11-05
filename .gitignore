@@ -1,0 +1,14 @@
+# Données générées volumineuses (régénérées par data/generer_donnees.py)
+data/lots_A.xml
+
+# Rapports XML générés par les scripts 04/06
+rapport_janvier.xml
+rapport_fevrier_centre.xml
+
+# Extraits texte des énoncés (outils de travail locaux)
+enonce.txt
+annexe.txt
+
+# Divers
+__pycache__/
+*.log
