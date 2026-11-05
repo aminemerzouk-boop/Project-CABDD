@@ -1,0 +1,13 @@
+code,nom,wilaya,zone,latitude,longitude,altitude_m
+BJ-01,Béjaïa Aéroport,Béjaïa,1,36.7474,5.0731,2
+BJ-02,Béjaïa Port,Béjaïa,1,36.7877,5.0256,2
+BJ-03,Béjaïa Université,Béjaïa,1,36.7253,5.0829,2
+JJ-01,Jijel Université,Jijel,1,36.8322,5.78,12
+JJ-02,Jijel Port,Jijel,1,36.8124,5.7835,2
+JJ-03,Jijel Centre,Jijel,1,36.7817,5.7864,2
+SE-01,Sétif Université,Sétif,2,36.1824,5.4493,1086
+SE-02,Sétif Centre,Sétif,2,36.2195,5.3845,1107
+SE-03,Sétif Port,Sétif,2,36.2257,5.4401,1055
+BB-01,Bordj Bou Arréridj Port,Bordj Bou Arréridj,2,36.108,4.7975,890
+BB-02,Bordj Bou Arréridj Aéroport,Bordj Bou Arréridj,2,36.0739,4.7751,924
+BB-03,Bordj Bou Arréridj Zone industrielle,Bordj Bou Arréridj,2,36.0524,4.7323,939
