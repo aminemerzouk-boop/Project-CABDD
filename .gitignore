@@ -1,0 +1,29 @@
+# Fichiers système et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Fichiers temporaires et journaux SQL
+*.tmp
+*.log
+*.bak
+
+# Artefacts de compilation de rapport (LaTeX / Word / LibreOffice)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+~$*.docx
+.~lock.*
+
+# Exports volumineux générés lors des tests (garder uniquement les extraits utiles)
+output/
