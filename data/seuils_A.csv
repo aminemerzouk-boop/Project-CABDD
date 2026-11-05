@@ -1,9 +1,7 @@
-type_capteur,grandeur,borne,valeur,unite
-temperature,temperature,min,-10,°C
-temperature,temperature,max,45,°C
-air,pm25,max,100,µg/m3
-air,pm10,max,150,µg/m3
-air,no2,max,200,µg/m3
-hydro,humidite,min,0,%
-hydro,humidite,max,100,%
-hydro,pluie,max,300,mm
+type,grandeur,borne,valeur,unite
+temperature,valeur,min,0.0,°C
+temperature,valeur,max,35.0,°C
+air,pm25,max,25.0,µg/m3
+air,pm10,max,50.0,µg/m3
+air,no2,max,100.0,µg/m3
+hydro,pluie,max,10.0,mm/3h

@@ -1,5 +1,32 @@
-# Données générées volumineuses (régénérées par data/generer_donnees.py)
-data/lots_A.xml
+# Fichiers système et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Fichiers temporaires et journaux
+*.tmp
+*.log
+*.bak
+
+# Artefacts de compilation de rapport (LaTeX / Word / LibreOffice)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.toc
+~$*.docx
+.~lock.*
+
+# Exports volumineux générés lors des tests
+output/
 
 # Rapports XML générés par les scripts 04/06
 rapport_janvier.xml
@@ -11,4 +38,3 @@ annexe.txt
 
 # Divers
 __pycache__/
-*.log
