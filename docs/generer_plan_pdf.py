@@ -28,7 +28,7 @@ TACHES = [
     ("06", "sql/06_rapport_xml.sql", "Rapport XML Bilan journalier (variante A)",
      "generer_bilan_journalier_xml(debut, fin) : <bilanJournalier><jour><station><grandeur> "
      "avec min/max/moyenne/nbMesures, en tenant compte des dates de mise en service/retrait. "
-     "Test : extrait sur février 2026.", "a_faire"),
+     "Test : extrait sur février 2026. Testé sur lots_A.xml officiel : OK.", "fait"),
     ("07", "sql/07_zones_partitions.sql", "Schémas zone1/zone2 + partitionnement mensuel",
      "Copie locale du référentiel, PARTITION BY RANGE (instant_mesure) 2026_01..2026_04 + DEFAULT, "
      "contrainte 'stations de la zone uniquement'. Critère : EXPLAIN 1 mois = 1 seule partition lue.", "a_faire"),
