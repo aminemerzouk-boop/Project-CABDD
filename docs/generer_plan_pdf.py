@@ -24,7 +24,7 @@ TACHES = [
     ("04", "sql/04_referentiel_csv.sql", "Chargement du référentiel CSV -> modèle RO",
      "Staging \\copy des 3 CSV officiels (en-têtes altitude_m, date_retrait, type), "
      "insertion station/capteur*/seuil_alerte, tests de rejet (humidité>100, PM<0, capteur inconnu). "
-     "Critère : SELECT * FROM capteur = 36 lignes.", "a_faire"),
+     "Critère : SELECT * FROM capteur = 36 lignes. Testé : OK (36 capteurs, rejets FK/CHECK OK).", "fait"),
     ("06", "sql/06_rapport_xml.sql", "Rapport XML Bilan journalier (variante A)",
      "generer_bilan_journalier_xml(debut, fin) : <bilanJournalier><jour><station><grandeur> "
      "avec min/max/moyenne/nbMesures, en tenant compte des dates de mise en service/retrait. "
