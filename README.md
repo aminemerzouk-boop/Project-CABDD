@@ -90,3 +90,38 @@ Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt 
 - [ ] **Fin Étape 1** : `01` à `04` s'exécutent sans erreur ; les 36 capteurs remontent via `SELECT * FROM capteur` ; les valeurs impossibles et capteurs inconnus sont rejetés ; les 3 opérations fonctionnent. *(Revue croisée Amine $\leftrightarrow$ Samou)*
 - [ ] **Fin Étape 2** : `05` et `06` chargent `lots_A.xml` en pur SQL ; `nb_valides + nb_isolees = nb_total_xml` ; les lots bruts répondent aux requêtes XPath ; le Bilan journalier XML est généré. *(Revue croisée Amine $\leftrightarrow$ Samou)*
 - [ ] **Fin Étape 3** : `07` à `10` répartissent les mesures par mois dans `zone1` et `zone2` ; `centre` interroge et insère de façon transparente ; la propagation du référentiel est automatique ; les plans `EXPLAIN ANALYZE` sont capturés et commentés dans le rapport de 10 pages.
+
+---
+
+## Implémentation (branche `arena/614d54cb-project-cabdd`)
+
+### Outils nécessaires
+- **Docker + docker compose** : 3 conteneurs `postgres:16` (`centre`, `zone1`, `zone2`) — voir `docker-compose.yml`
+- **VS Code** + extensions recommandées (`.vscode/extensions.json`) : client PostgreSQL (connexions préconfigurées dans `.vscode/settings.json`), XML (RedHat), Docker
+- **Git** : versioning des scripts SQL numérotés
+- **psql** (client PostgreSQL) et **Python 3 (stdlib)** pour régénérer des données de démo (`data/generer_donnees.py`) si besoin
+
+### Arborescence de l'implémentation
+```
+├── docker-compose.yml          # 3 conteneurs PostgreSQL (ports 5433/5434/5435)
+├── run_all.sh                  # rejoue tout le projet dans l'ordre (modes --docker / --cluster)
+├── sql/
+│   ├── 00_init.sql             # création des 3 bases (mode cluster unique)
+│   ├── 01_schema.sql           # étape 1 : schéma relationnel-objet (centre)
+│   ├── 02_referentiel.sql      # étape 1 : chargement CSV du référentiel
+│   ├── 03_lots_xml.sql         # étape 2 : chargement XML 100% SQL + isolement
+│   ├── 04_rapport_xml.sql      # étape 2 : rapport XML bilan journalier
+│   ├── 05b_zone.sql            # étape 3 : schéma d'une zone (partitionnement mensuel)
+│   ├── 05_distribution_centre.sql  # étape 3 : FDW, transparence, propagation du référentiel
+│   ├── 06_rapport_centre.sql   # étape 3 : rapport + démonstrations depuis le centre
+│   └── 07_tests_integrite.sql  # preuves que le schéma se protège seul
+└── rapport/rapport.md          # rapport (3 étapes, ≤ 10 pages)
+```
+
+### Exécution rapide
+```bash
+docker compose up -d
+./run_all.sh --docker
+# ou en cluster unique :
+./run_all.sh --cluster "psql -h 127.0.0.1 -p 5432 -U postgres"
+```

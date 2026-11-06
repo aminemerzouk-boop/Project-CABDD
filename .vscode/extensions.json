@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-azuretools.vscode-docker",          // conteneurs centre/zone1/zone2
+    "ckolkman.vscode-postgres",             // connexion directe aux 3 bases PostgreSQL
+    "cweijan.vscode-postgresql-client2",    // alternative : client SQL intégré
+    "redhat.vscode-xml",                    // édition/validation des lots et rapports XML
+    "formulahendry.code-runner",            // lancer les scripts SQL rapidement
+    "eamodio.gitlens"                       // historique Git des scripts
+  ]
+}
