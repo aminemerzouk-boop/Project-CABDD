@@ -31,32 +31,32 @@
 Afin d'avancer **en parallèle sans blocage** et de **maîtriser chacun les 3 étapes** pour le contrôle continu (50 %) et la soutenance (50 %), le travail est réparti par sous-systèmes complémentaires sur des scripts SQL séparés (zéro conflit Git) :
 
 ### Merzouk Amine — *Modèle Relationnel-Objet, Qualité/Ingestion XML & Propagation*
-- **Étape 1 (`sql/02_schema_ro.sql`) :**
+- **Étape 1 (`sql/02_schema_ro.sql`) ✅ fait :**
   - Définition des types composés (`t_position`, `t_qualite_air`, `t_hydrometrie`) et des énumérations métier.
   - Hiérarchie d'héritage des capteurs (`capteur` $\rightarrow$ `capteur_temperature`, `capteur_air`, `capteur_hydro`).
   - Contraintes `CHECK` d'intégrité physique (humidité $\in [0,100]$, pluie $\ge 0$, PM $\ge 0$, etc.) et **triggers PL/pgSQL** garantissant l'unicité de clé primaire et les clés étrangères sur toute la hiérarchie `INHERITS`.
-- **Étape 2 (`sql/05_chargement_xml.sql`) :**
+- **Étape 2 (`sql/05_chargement_xml.sql`) ✅ fait :**
   - Chargement 100 % SQL de `data/lots_A.xml` et conservation intacte dans `lot_brut`.
   - Requêtes XPath directes sur les lots bruts (lots contenant un capteur donné, nombre de mesures par lot).
   - Pipeline de validation et d'isolement dans `mesure_isolee` selon les **5 motifs** (`valeur_impossible`, `valeur_manquante`, `format_invalide`, `capteur_inconnu`, `doublon`) avec preuve `valides + isolées = total XML`.
-- **Étape 3 (`sql/07_zones_partitions.sql` [IDs] & `sql/08_propagation_referentiel.sql`) :**
+- **Étape 3 (`sql/08_propagation_referentiel.sql`) ✅ fait :**
   - Stratégie d'identifiants uniques à l'échelle du réseau (séquences impaires sur `zone1`, paires sur `zone2`).
   - Serveurs `postgres_fdw` et triggers de **propagation automatique du référentiel** de `centre` vers `zone1` et `zone2`.
 
 ---
 
 ### Megharba Samou — *Référentiel CSV & Méthodes Objet, Rapport XML & Distribution/Partitions*
-- **Étape 1 (`sql/01_init_bases.sql`, `sql/03_operations_ro.sql`, `sql/04_referentiel_csv.sql`) :**
+- **Étape 1 (`sql/01_init_bases.sql`, `sql/03_operations_ro.sql`, `sql/04_referentiel_csv.sql`) ✅ fait :**
   - Création des 3 bases (`centre`, `zone1`, `zone2`) et chargement des 3 fichiers CSV (`stations_A.csv`, `capteurs_A.csv`, `seuils_A.csv`) vers les objets composés et sous-tables de capteurs.
   - Opérations en base sur les types composés :
     1. `distance_km(t_position, t_position)` (formule de Haversine entre deux stations) ;
     2. `depasse_seuil_*` (test de franchissement des seuils du référentiel) ;
     3. conversions d'unités adaptées à la Variante A (`°C` $\rightarrow$ `°F`, `mm` $\rightarrow$ `pouces`, point de rosée).
   - Jeux de tests prouvant le rejet des valeurs impossibles et des capteurs inexistants.
-- **Étape 2 (`sql/06_rapport_xml.sql`) :**
+- **Étape 2 (`sql/06_rapport_xml.sql`) ✅ fait :**
   - Conception et justification de la structure XML du **Bilan journalier** (Variante A).
   - Fonction SQL/XML `generer_bilan_journalier_xml(p_date_debut, p_date_fin)` calculant `min`, `max`, `moyenne` et `nb_mesures` par jour, station et grandeur en tenant compte des dates de mise en service et de retrait.
-- **Étape 3 (`sql/07_zones_partitions.sql` [partitions] & `sql/09_centre_transparent.sql`) :**
+- **Étape 3 (`sql/07_zones_partitions.sql` ✅ fait & `sql/09_centre_transparent.sql` ✅ fait) :**
   - Partitionnement temporel **par mois** dans `zone1` et `zone2`.
   - Vues globales transparentes sur `centre`, routage automatique des insertions (`INSTEAD OF INSERT`) vers la bonne zone, exécution du rapport XML depuis `centre` et analyse des plans `EXPLAIN (ANALYZE, VERBOSE)`.
 
@@ -102,7 +102,8 @@ Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt 
 - [x] **Démarrage** : Fichiers officiels `stations_A.csv`, `capteurs_A.csv`, `seuils_A.csv` et `lots_A.xml` déposés dans `data/`.
 - [x] **Fin Étape 1** : `01` à `04` prêts à s'exécuter sans erreur (`.\run_all.ps1 -StopAt 4`) ; les 36 capteurs remontent via `SELECT * FROM capteur` ; les valeurs impossibles et capteurs inconnus sont rejetés ; les 3 opérations fonctionnent.
 - [x] **Fin Étape 2** : `05` et `06` prêts à s'exécuter (`.\run_all.ps1 -StopAt 6`) ; `lots_A.xml` chargé en pur SQL (`33 280` valides + `694` isolées = `33 974`) ; lots bruts interrogeables en XPath ; Bilan journalier XML généré.
-- [ ] **Fin Étape 3** : `08` (propagation & IDs d'Amine) est prêt ; il reste `07` et `09` (Samou) puis `10` (ensemble) pour finaliser la distribution et capturer les plans `EXPLAIN ANALYZE`.
+- [x] **Fin Étape 3 (scripts)** : `07` (partitions Samou) ✅, `08` (propagation Amine) ✅, `09` (transparence centre Samou) ✅ — chaîne 01→09 testée de bout en bout (33 280 mesures réparties, unicité des IDs, bilan XML depuis le centre).
+- [ ] **Fin Étape 3 (finale)** : il ne reste que `10_tests_et_plans.sql` (ensemble) : batterie de tests, `EXPLAIN ANALYZE`, panne simulée d'une zone, extraits pour le rapport.
 
 ---
 
