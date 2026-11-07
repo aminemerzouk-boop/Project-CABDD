@@ -7,7 +7,8 @@
 
 ![Vue d'ensemble du Mini-Projet CABDD — Variante A](docs/schema_resume_projet.png)
 
-> Guide visuel complet : [`docs/guide_visuel_projet.md`](docs/guide_visuel_projet.md)
+> Guide visuel complet : [`docs/guide_visuel_projet.md`](docs/guide_visuel_projet.md)  
+> Installation Windows 11 + PostgreSQL + VS Code & Bilan de `main` : [`docs/guide_installation_windows11.md`](docs/guide_installation_windows11.md)
 
 ---
 
