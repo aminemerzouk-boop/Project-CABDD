@@ -64,6 +64,21 @@ foreach ($s in $scripts) {
     Write-Host ("[{0:D2}/10] Execution de {1}" -f $s.Num, $s.File) -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Cyan
 
+    if ($s.Num -eq 7) {
+        # Le script 07 s'exécute une fois PAR ZONE avec son numéro de zone
+        # (séquences d'IDs impaires en zone1, paires en zone2)
+        foreach ($zone in @(@{ Db = "zone1"; Num = 1 }, @{ Db = "zone2"; Num = 2 })) {
+            Write-Host ("  -> base {0} (zone_num={1})" -f $zone.Db, $zone.Num) -ForegroundColor DarkCyan
+            psql -h $HostName -p $Port -U $User -d $zone.Db -P pager=off `
+                 -v ON_ERROR_STOP=1 -v zone_num=$($zone.Num) `
+                 -f $s.File
+            if ($LASTEXITCODE -ne 0) {
+                throw "Echec lors de l'execution de $($s.File) sur $($zone.Db) (code $LASTEXITCODE)."
+            }
+        }
+        continue
+    }
+
     psql -h $HostName -p $Port -U $User -d postgres -P pager=off `
          -v ON_ERROR_STOP=1 `
          -v pg_host=$HostName `

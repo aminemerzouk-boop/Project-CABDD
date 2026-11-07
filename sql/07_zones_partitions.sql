@@ -12,36 +12,49 @@
 -- 1. Types composés + copie locale du référentiel (nécessaire au contrôle
 --    local des mesures : chaque zone valide seule ses propres mesures)
 -- ----------------------------------------------------------------------------
-CREATE TYPE t_position AS (latitude NUMERIC(9,6), longitude NUMERIC(9,6), altitude NUMERIC(7,2));
-CREATE TYPE t_qualite_air AS (pm25 NUMERIC(7,2), pm10 NUMERIC(7,2), no2 NUMERIC(7,2));
-CREATE TYPE t_hydrometrie AS (humidite NUMERIC(5,2), pluie NUMERIC(7,2));
-CREATE TYPE borne_seuil_enum AS ENUM ('min','max');
-CREATE TYPE motif_rejet_enum AS ENUM ('valeur_impossible','valeur_manquante','format_invalide','capteur_inconnu','doublon');
+-- Types idempotents (rejeu du script sans erreur)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 't_position') THEN
+    CREATE TYPE t_position AS (latitude NUMERIC(9,6), longitude NUMERIC(9,6), altitude NUMERIC(7,2));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 't_qualite_air') THEN
+    CREATE TYPE t_qualite_air AS (pm25 NUMERIC(7,2), pm10 NUMERIC(7,2), no2 NUMERIC(7,2));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 't_hydrometrie') THEN
+    CREATE TYPE t_hydrometrie AS (humidite NUMERIC(5,2), pluie NUMERIC(7,2));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'borne_seuil_enum') THEN
+    CREATE TYPE borne_seuil_enum AS ENUM ('min','max');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'motif_rejet_enum') THEN
+    CREATE TYPE motif_rejet_enum AS ENUM ('valeur_impossible','valeur_manquante','format_invalide','capteur_inconnu','doublon');
+  END IF;
+END $$;
 
-CREATE TABLE station (code_station VARCHAR(10) PRIMARY KEY, nom VARCHAR(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS station (code_station VARCHAR(10) PRIMARY KEY, nom VARCHAR(100) NOT NULL,
   wilaya VARCHAR(60) NOT NULL, zone SMALLINT NOT NULL CHECK (zone IN (1,2)), position t_position NOT NULL,
   CONSTRAINT pos_ok CHECK ((position).latitude BETWEEN -90 AND 90 AND (position).longitude BETWEEN -180 AND 180));
-CREATE TABLE capteur (code_capteur VARCHAR(15) PRIMARY KEY, code_station VARCHAR(10) NOT NULL REFERENCES station(code_station),
+CREATE TABLE IF NOT EXISTS capteur (code_capteur VARCHAR(15) PRIMARY KEY, code_station VARCHAR(10) NOT NULL REFERENCES station(code_station),
   type_capteur VARCHAR(20) NOT NULL CHECK (type_capteur IN ('temperature','air','hydro')),
   date_mise_en_service DATE NOT NULL, date_retrait DATE, etat VARCHAR(30) NOT NULL);
-CREATE TABLE capteur_temperature () INHERITS (capteur);
-CREATE TABLE capteur_air         () INHERITS (capteur);
-CREATE TABLE capteur_hydro       () INHERITS (capteur);
-CREATE TABLE seuil_alerte (id_seuil SERIAL PRIMARY KEY, type_capteur VARCHAR(20) NOT NULL,
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='capteur_temperature') THEN CREATE TABLE capteur_temperature () INHERITS (capteur); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='capteur_air') THEN CREATE TABLE capteur_air () INHERITS (capteur); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname='capteur_hydro') THEN CREATE TABLE capteur_hydro () INHERITS (capteur); END IF; END $$;
+CREATE TABLE IF NOT EXISTS seuil_alerte (id_seuil SERIAL PRIMARY KEY, type_capteur VARCHAR(20) NOT NULL,
   grandeur VARCHAR(30) NOT NULL, borne borne_seuil_enum NOT NULL, valeur NUMERIC(10,2) NOT NULL, unite VARCHAR(20) NOT NULL);
 
 -- ----------------------------------------------------------------------------
 -- 2. Séquence d'identifiants UNIQUE sur tout le réseau (Merzouk Amine) :
 --    zone1 -> IDs IMPAIRS (INCREMENT 2 START 1), zone2 -> IDs PAIRS (START 2)
 -- ----------------------------------------------------------------------------
-CREATE SEQUENCE seq_mesure INCREMENT BY 2 START WITH :zone_num;
+CREATE SEQUENCE IF NOT EXISTS seq_mesure INCREMENT BY 2 START WITH :zone_num;
 
 -- ----------------------------------------------------------------------------
 -- 3. Tables de mesures PARTITIONNÉES PAR MOIS (Variante A)
 --    Trois tables typées, partitionnées par RANGE sur instant_mesure.
 --    La clé primaire inclut la clé de partition (exigence PostgreSQL).
 -- ----------------------------------------------------------------------------
-CREATE TABLE mesure_temperature (
+CREATE TABLE IF NOT EXISTS mesure_temperature (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
     code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
@@ -50,7 +63,7 @@ CREATE TABLE mesure_temperature (
     PRIMARY KEY (id_mesure, instant_mesure)
 ) PARTITION BY RANGE (instant_mesure);
 
-CREATE TABLE mesure_air (
+CREATE TABLE IF NOT EXISTS mesure_air (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
     code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
@@ -60,7 +73,7 @@ CREATE TABLE mesure_air (
     CONSTRAINT air_ok CHECK ((valeurs_air).pm25 >= 0 AND (valeurs_air).pm10 >= 0 AND (valeurs_air).no2 >= 0)
 ) PARTITION BY RANGE (instant_mesure);
 
-CREATE TABLE mesure_hydro (
+CREATE TABLE IF NOT EXISTS mesure_hydro (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
     code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
@@ -83,25 +96,29 @@ BEGIN
         WHILE d < DATE '2026-05-01' LOOP
             fin := d + INTERVAL '1 month';
             m := t || '_2026_' || to_char(d, 'MM');
-            EXECUTE format('CREATE TABLE %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
-                           m, t, d, fin);
+            IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = m) THEN
+                EXECUTE format('CREATE TABLE %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
+                               m, t, d, fin);
+            END IF;
             d := fin;
         END LOOP;
-        EXECUTE format('CREATE TABLE %I_default PARTITION OF %I DEFAULT', t, t);
+        IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = t || '_default') THEN
+            EXECUTE format('CREATE TABLE %I_default PARTITION OF %I DEFAULT', t, t);
+        END IF;
     END LOOP;
 END $$;
 
-CREATE INDEX ON mesure_temperature (code_capteur, instant_mesure);
-CREATE INDEX ON mesure_air         (code_capteur, instant_mesure);
-CREATE INDEX ON mesure_hydro       (code_capteur, instant_mesure);
+CREATE INDEX IF NOT EXISTS idx_mes_temp ON mesure_temperature (code_capteur, instant_mesure);
+CREATE INDEX IF NOT EXISTS idx_mes_air  ON mesure_air         (code_capteur, instant_mesure);
+CREATE INDEX IF NOT EXISTS idx_mes_hydro ON mesure_hydro       (code_capteur, instant_mesure);
 
 -- ----------------------------------------------------------------------------
 -- 4. Contrainte de ZONE : aucune mesure d'une station hors de la zone
 --    (la zone ne stocke que ses propres mesures)
 -- ----------------------------------------------------------------------------
 -- la zone courante est stockée dans une table de config (persistante)
-CREATE TABLE config_zone (zone_num INT PRIMARY KEY);
-INSERT INTO config_zone VALUES (:'zone_num');
+CREATE TABLE IF NOT EXISTS config_zone (zone_num INT PRIMARY KEY);
+INSERT INTO config_zone VALUES (:'zone_num') ON CONFLICT (zone_num) DO UPDATE SET zone_num = EXCLUDED.zone_num;
 
 CREATE OR REPLACE FUNCTION verif_zone() RETURNS trigger AS $$
 BEGIN
@@ -112,17 +129,20 @@ BEGIN
     RETURN NEW;
 END $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_zone_temperature ON mesure_temperature;
 CREATE TRIGGER trg_zone_temperature BEFORE INSERT ON mesure_temperature
     FOR EACH ROW EXECUTE FUNCTION verif_zone();
+DROP TRIGGER IF EXISTS trg_zone_air ON mesure_air;
 CREATE TRIGGER trg_zone_air BEFORE INSERT ON mesure_air
     FOR EACH ROW EXECUTE FUNCTION verif_zone();
+DROP TRIGGER IF EXISTS trg_zone_hydro ON mesure_hydro;
 CREATE TRIGGER trg_zone_hydro BEFORE INSERT ON mesure_hydro
     FOR EACH ROW EXECUTE FUNCTION verif_zone();
 
 -- ----------------------------------------------------------------------------
 -- 5. Vue aplatie locale (réutilisée par la tâche 09 pour la fédération)
 -- ----------------------------------------------------------------------------
-CREATE VIEW v_mesure_plat AS
+CREATE OR REPLACE VIEW v_mesure_plat AS
 SELECT mt.instant_mesure::date AS jour, c.code_station, 'temperature' AS grandeur,
        '°C' AS unite, mt.temperature AS valeur
 FROM mesure_temperature mt JOIN capteur c ON c.code_capteur = mt.code_capteur
