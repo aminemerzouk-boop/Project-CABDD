@@ -6,7 +6,7 @@ Thumbs.db
 *.swp
 *~
 
-# Fichiers temporaires et journaux SQL
+# Fichiers temporaires et journaux
 *.tmp
 *.log
 *.bak
@@ -25,5 +25,16 @@ Thumbs.db
 ~$*.docx
 .~lock.*
 
-# Exports volumineux générés lors des tests (garder uniquement les extraits utiles)
+# Exports volumineux générés lors des tests
 output/
+
+# Rapports XML générés par les scripts 04/06
+rapport_janvier.xml
+rapport_fevrier_centre.xml
+
+# Extraits texte des énoncés (outils de travail locaux)
+enonce.txt
+annexe.txt
+
+# Divers
+__pycache__/
