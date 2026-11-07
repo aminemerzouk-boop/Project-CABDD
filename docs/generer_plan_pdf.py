@@ -31,7 +31,7 @@ TACHES = [
      "Test : extrait sur février 2026. Testé sur lots_A.xml officiel : OK.", "fait"),
     ("07", "sql/07_zones_partitions.sql", "Schémas zone1/zone2 + partitionnement mensuel",
      "Copie locale du référentiel, PARTITION BY RANGE (instant_mesure) 2026_01..2026_04 + DEFAULT, "
-     "contrainte 'stations de la zone uniquement'. Critère : EXPLAIN 1 mois = 1 seule partition lue.", "a_faire"),
+     "contrainte zone testée (rejet cross-zone OK), IDs impairs/pairs OK. Testé : OK.", "fait"),
     ("09", "sql/09_centre_transparent.sql", "Transparence centre : vues + routage + rapport réparti",
      "Foreign tables mesures zone1/zone2, migration des mesures, centre vidé, vues UNION ALL, "
      "INSTEAD OF INSERT, bilan XML depuis centre.", "a_faire"),
