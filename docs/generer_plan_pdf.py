@@ -34,7 +34,7 @@ TACHES = [
      "contrainte zone testée (rejet cross-zone OK), IDs impairs/pairs OK. Testé : OK.", "fait"),
     ("09", "sql/09_centre_transparent.sql", "Transparence centre : vues + routage + rapport réparti",
      "Foreign tables mesures zone1/zone2, migration des mesures, centre vidé, vues UNION ALL, "
-     "INSTEAD OF INSERT, bilan XML depuis centre.", "a_faire"),
+     "INSTEAD OF INSERT, bilan XML depuis centre. Testé : OK (33 281 mesures vues du centre, unicité OK).", "fait"),
     ("10", "sql/10_tests_et_plans.sql", "Validation complète + plans (avec Amine)",
      "Batterie de tests, EXPLAIN (ANALYZE, VERBOSE) centre -> 1 zone / 1 mois, panne simulée d'une zone, "
      "extraits pour le rapport 10 pages.", "a_faire"),

@@ -63,7 +63,7 @@ CREATE OR REPLACE FUNCTION seuils_franchis(p_type VARCHAR, p_grandeur VARCHAR, p
 RETURNS TABLE(grandeur VARCHAR, borne VARCHAR, seuil NUMERIC, unite VARCHAR) AS $$
     SELECT s.grandeur, s.borne::text, s.valeur, s.unite
     FROM seuil_alerte s
-    WHERE s.type_capteur = p_type AND s.grandeur = p_grandeur
+    WHERE s.type_capteur::text = p_type AND s.grandeur = p_grandeur
       AND ((s.borne = 'max' AND p_valeur > s.valeur)
         OR (s.borne = 'min' AND p_valeur < s.valeur))
 $$ LANGUAGE sql STABLE;
