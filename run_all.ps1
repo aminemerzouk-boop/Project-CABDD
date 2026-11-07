@@ -1,23 +1,28 @@
 <#
 .SYNOPSIS
-    Exécute dans l'ordre les scripts SQL numérotés du Mini-Projet CABDD (Variante A)
+    Execute dans l'ordre les scripts SQL numerotes du Mini-Projet CABDD (Variante A)
     sous Windows 11 + PostgreSQL 18.
 
 .EXAMPLE
-    .\run_all.ps1 -StopAt 4                 # Teste uniquement l'Étape 1 (01 -> 04)
-    .\run_all.ps1 -StopAt 6                 # Teste les Étapes 1 et 2 (01 -> 06)
-    .\run_all.ps1                           # Exécute tout le projet (01 -> 10)
+    .\run_all.ps1 -StopAt 4                 # Teste uniquement l'Etape 1 (01 -> 04)
+    .\run_all.ps1 -StopAt 6                 # Teste les Etapes 1 et 2 (01 -> 06)
+    .\run_all.ps1                           # Execute tout le projet (01 -> 10)
 #>
 param(
     [string]$HostName = "127.0.0.1",
     [int]$Port        = 5432,
     [string]$User     = "postgres",
-    [string]$Password = "postgresql",
+    [string]$Password = "postgres",
     [int]$StopAt      = 10
 )
 
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
+
+chcp.com 65001 > $null
+[Console]::InputEncoding  = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 $env:PGPASSWORD = $Password
 $env:PGCLIENTENCODING = "UTF8"
 
@@ -37,7 +42,7 @@ $scripts = @(
 foreach ($s in $scripts) {
     if ($s.Num -gt $StopAt) { break }
     Write-Host "`n============================================================" -ForegroundColor Cyan
-    Write-Host ("[{0:D2}/10] Exécution de {1}" -f $s.Num, $s.File) -ForegroundColor Cyan
+    Write-Host ("[{0:D2}/10] Execution de {1}" -f $s.Num, $s.File) -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Cyan
 
     psql -h $HostName -p $Port -U $User -d postgres `
@@ -49,8 +54,8 @@ foreach ($s in $scripts) {
          -f $s.File
 
     if ($LASTEXITCODE -ne 0) {
-        throw "Échec lors de l'exécution de $($s.File) (code $LASTEXITCODE)."
+        throw "Echec lors de l'execution de $($s.File) (code $LASTEXITCODE)."
     }
 }
 
-Write-Host "`nExécution terminée avec succès jusqu'au script $StopAt !" -ForegroundColor Green
+Write-Host "`nExecution terminee avec succes jusqu'au script $StopAt !" -ForegroundColor Green

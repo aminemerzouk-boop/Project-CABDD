@@ -134,6 +134,12 @@ SELECT xmlelement(
 $$;
 
 -- ----------------------------------------------------------------------------
--- Test : génération du bilan sur la 1re semaine de février 2026
+-- Test : generation du bilan sur le 1er fevrier 2026 (apercu indente lisible)
 -- ----------------------------------------------------------------------------
-SELECT generer_bilan_journalier_xml(DATE '2026-02-01', DATE '2026-02-07');
+SELECT left(
+           xmlserialize(
+               DOCUMENT generer_bilan_journalier_xml(DATE '2026-02-01', DATE '2026-02-01')
+               AS text INDENT
+           ),
+           1500
+       ) AS apercu_bilan_xml_2026_02_01;
