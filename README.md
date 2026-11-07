@@ -5,6 +5,10 @@
 - **Binôme :** **Merzouk Amine** & **Megharba Samou**
 - **Variante retenue :** **Variante A**
 
+![Vue d'ensemble du Mini-Projet CABDD — Variante A](docs/schema_resume_projet.png)
+
+> Guide visuel complet : [`docs/guide_visuel_projet.md`](docs/guide_visuel_projet.md)
+
 ---
 
 ## 1. Caractéristiques de notre Variante A
