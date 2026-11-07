@@ -19,6 +19,25 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
+# ---------------------------------------------------------------
+# Identifiants locaux du binôme : lus depuis config.local.ps1
+# (copie de config.example.ps1, NON commitée dans Git).
+# Chaque membre y met SON user / mot de passe PostgreSQL.
+# Priorité : config.local.ps1 > paramètres de la ligne de commande.
+# ---------------------------------------------------------------
+$localConfig = Join-Path $PSScriptRoot "config.local.ps1"
+if (Test-Path $localConfig) {
+    $PGConfig = & $localConfig | Select-Object -First 1
+    if ($PGConfig.HostName) { $HostName = $PGConfig.HostName }
+    if ($PGConfig.Port)     { $Port     = $PGConfig.Port }
+    if ($PGConfig.User)     { $User     = $PGConfig.User }
+    if ($PGConfig.Password) { $Password = $PGConfig.Password }
+    Write-Host "Config locale chargee depuis config.local.ps1 (user: $User)" -ForegroundColor Yellow
+} else {
+    Write-Host "AUCUN config.local.ps1 trouve : identifiants par defaut ou -User/-Password requis." -ForegroundColor Yellow
+    Write-Host "  -> copie config.example.ps1 en config.local.ps1 et mets tes identifiants." -ForegroundColor Yellow
+}
+
 chcp.com 65001 > $null
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8

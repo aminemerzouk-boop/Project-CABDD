@@ -127,11 +127,23 @@ Symptôme : `FATAL: password authentication failed for user "postgres"` lors de 
    ```
 5. Remettre `scram-sha-256` dans `pg_hba.conf`, redémarrer le service → le mot de passe est de nouveau exigé.
 
+### 🔧 Configurer SES identifiants une fois pour toutes (binôme)
+Chaque membre du binôme définit **ses propres** identifiants dans un fichier **local et non commité** :
+```powershell
+# 1. Copier le modèle (une seule fois)
+Copy-Item config.example.ps1 config.local.ps1
+# 2. Éditer config.local.ps1 et mettre SON user / mot de passe :
+#    $PGConfig = @{ HostName="127.0.0.1"; Port=5432; User="postgres"; Password="MON_MDP" }
+# 3. Lancer : run_all.ps1 lit automatiquement config.local.ps1
+.\run_all.ps1                 # lit config.local.ps1
+# ou forcer en ligne de commande (prioritaire sur le fichier) :
+.\run_all.ps1 -User postgres -Password 'ton_mot_de_passe'
+```
+> `config.local.ps1` est dans `.gitignore` : **aucun mot de passe n'est jamais poussé sur GitHub**. Samou met ses identifiants sur sa machine, Amine les siens sur la sienne.
+
 ### Lancer le projet avec TES identifiants
 ```powershell
-.\run_all.ps1 -User postgres -Password 'ton_mot_de_passe' -HostName 127.0.0.1 -Port 5432
-# ou via la variable d'environnement (évite de l'écrire en clair) :
-$env:PGPASSWORD = 'ton_mot_de_passe'
+$env:PGPASSWORD = 'ton_mot_de_passe'   # évite de l'écrire en clair
 .\run_all.ps1
 ```
 > Astuce : `psql -U postgres -d postgres` te connecte sans mot de passe si `pg_hba.conf` est en `trust` (pratique en local pour les tests).

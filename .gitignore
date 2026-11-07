@@ -38,3 +38,8 @@ annexe.txt
 
 # Divers
 __pycache__/
+
+# Identifiants PostgreSQL locaux du binôme (JAMAIS commités)
+config.local.ps1
+*.local.ps1
+.env
