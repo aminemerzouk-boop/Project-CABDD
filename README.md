@@ -103,3 +103,35 @@ Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt 
 - [x] **Fin Étape 1** : `01` à `04` prêts à s'exécuter sans erreur (`.\run_all.ps1 -StopAt 4`) ; les 36 capteurs remontent via `SELECT * FROM capteur` ; les valeurs impossibles et capteurs inconnus sont rejetés ; les 3 opérations fonctionnent.
 - [x] **Fin Étape 2** : `05` et `06` prêts à s'exécuter (`.\run_all.ps1 -StopAt 6`) ; `lots_A.xml` chargé en pur SQL (`33 280` valides + `694` isolées = `33 974`) ; lots bruts interrogeables en XPath ; Bilan journalier XML généré.
 - [ ] **Fin Étape 3** : `08` (propagation & IDs d'Amine) est prêt ; il reste `07` et `09` (Samou) puis `10` (ensemble) pour finaliser la distribution et capturer les plans `EXPLAIN ANALYZE`.
+
+---
+
+## 6. 🔑 Mot de passe PostgreSQL oublié / mauvais identifiants (Windows)
+
+Symptôme : `FATAL: password authentication failed for user "postgres"` lors de `.\run_all.ps1`.
+
+### Réinitialiser le mot de passe (méthode pg_hba en `trust`)
+1. Ouvrir `C:\Program Files\PostgreSQL\18\data\pg_hba.conf` (en admin, ex. Bloc-notes "Exécuter en tant qu'administrateur")
+2. Remplacer `scram-sha-256` / `md5` par **`trust`** sur les lignes `local` et `host` :
+   ```
+   local   all   all                 trust
+   host    all   all   127.0.0.1/32  trust
+   host    all   all   ::1/128       trust
+   ```
+3. Redémarrer le service : `services.msc` → **postgresql-x64-18** → Redémarrer
+   (ou PowerShell admin : `Restart-Service postgresql-x64-18`)
+4. Ouvrir un terminal et définir un nouveau mot de passe :
+   ```powershell
+   psql -h 127.0.0.1 -U postgres -d postgres
+   ALTER USER postgres PASSWORD 'postgres';
+   ```
+5. Remettre `scram-sha-256` dans `pg_hba.conf`, redémarrer le service → le mot de passe est de nouveau exigé.
+
+### Lancer le projet avec TES identifiants
+```powershell
+.\run_all.ps1 -User postgres -Password 'ton_mot_de_passe' -HostName 127.0.0.1 -Port 5432
+# ou via la variable d'environnement (évite de l'écrire en clair) :
+$env:PGPASSWORD = 'ton_mot_de_passe'
+.\run_all.ps1
+```
+> Astuce : `psql -U postgres -d postgres` te connecte sans mot de passe si `pg_hba.conf` est en `trust` (pratique en local pour les tests).
