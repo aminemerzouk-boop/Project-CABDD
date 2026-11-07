@@ -64,7 +64,7 @@ foreach ($s in $scripts) {
     Write-Host ("[{0:D2}/10] Execution de {1}" -f $s.Num, $s.File) -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Cyan
 
-    psql -h $HostName -p $Port -U $User -d postgres `
+    psql -h $HostName -p $Port -U $User -d postgres -P pager=off `
          -v ON_ERROR_STOP=1 `
          -v pg_host=$HostName `
          -v pg_port=$Port `
