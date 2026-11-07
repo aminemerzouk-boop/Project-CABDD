@@ -1,0 +1,34 @@
+{
+  "sqltools.connections": [
+    {
+      "name": "centre",
+      "driver": "PostgreSQL",
+      "server": "127.0.0.1",
+      "port": 5433,
+      "database": "centre",
+      "username": "postgres",
+      "password": "postgres"
+    },
+    {
+      "name": "zone1",
+      "driver": "PostgreSQL",
+      "server": "127.0.0.1",
+      "port": 5434,
+      "database": "zone1",
+      "username": "postgres",
+      "password": "postgres"
+    },
+    {
+      "name": "zone2",
+      "driver": "PostgreSQL",
+      "server": "127.0.0.1",
+      "port": 5435,
+      "database": "zone2",
+      "username": "postgres",
+      "password": "postgres"
+    }
+  ],
+  "files.exclude": {
+    "data/lots_A.xml": true
+  }
+}
