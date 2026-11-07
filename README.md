@@ -74,9 +74,9 @@ Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt 
 | **04** | `sql/04_referentiel_csv.sql` | Megharba Samou | ✅ Prêt | Transformation des 3 CSV plats vers le modèle RO + tests contraintes |
 | **05** | `sql/05_chargement_xml.sql` | Merzouk Amine | ✅ Prêt | Lecture SQL de `lots_A.xml`, XPath sur lots bruts, tri valides / isolées |
 | **06** | `sql/06_rapport_xml.sql` | Megharba Samou | ✅ Prêt | Requête/fonction SQL/XML du **Bilan journalier** paramétré |
-| **07** | `sql/07_zones_partitions.sql` | Samou & Amine | ⏳ Samou | Schémas `zone1` & `zone2`, partitions mensuelles et séquences pair/impair |
+| **07** | `sql/07_zones_partitions.sql` | Samou & Amine | ✅ Prêt | Schémas `zone1` & `zone2`, partitions mensuelles et séquences pair/impair |
 | **08** | `sql/08_propagation_referentiel.sql` | Merzouk Amine | ✅ Prêt | Serveurs FDW et propagation automatique du référentiel `centre` $\rightarrow$ zones |
-| **09** | `sql/09_centre_transparent.sql` | Megharba Samou | ⏳ Samou | Vues globales sur `centre`, routage `INSTEAD OF INSERT`, bilan XML réparti |
+| **09** | `sql/09_centre_transparent.sql` | Megharba Samou | ✅ Prêt | Vues globales sur `centre`, routage `INSTEAD OF INSERT`, bilan XML réparti |
 | **10** | `sql/10_tests_et_plans.sql` | Amine & Samou | ⏳ Ensemble | Batterie de validation complète, `EXPLAIN ANALYZE` et test panne d'une zone |
 
 ### Exécution rapide sous Windows 11 (PowerShell)
