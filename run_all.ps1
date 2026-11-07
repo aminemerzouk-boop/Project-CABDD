@@ -12,7 +12,7 @@ param(
     [string]$HostName = "127.0.0.1",
     [int]$Port        = 5432,
     [string]$User     = "postgres",
-    [string]$Password = "postgresql",
+    [string]$Password = "postgres",
     [int]$StopAt      = 10
 )
 
