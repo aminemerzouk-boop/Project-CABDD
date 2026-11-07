@@ -87,8 +87,8 @@ Dans PowerShell (normal), exécute ce bloc pour que `psql` retienne ton mot de p
 $pgPassDir = "$env:APPDATA\postgresql"
 New-Item -ItemType Directory -Force -Path $pgPassDir | Out-Null
 @(
-  "127.0.0.1:5432:*:postgres:postgres"
-  "localhost:5432:*:postgres:postgres"
+  "127.0.0.1:5432:*:postgres:postgresql"
+  "localhost:5432:*:postgres:postgresql"
 ) | Set-Content -Encoding ASCII "$pgPassDir\pgpass.conf"
 ```
 Maintenant, tape simplement :
