@@ -148,3 +148,42 @@ $env:PGPASSWORD = 'ton_mot_de_passe'   # évite de l'écrire en clair
 .\run_all.ps1
 ```
 > Astuce : `psql -U postgres -d postgres` te connecte sans mot de passe si `pg_hba.conf` est en `trust` (pratique en local pour les tests).
+
+---
+
+## 7. 📝 Capturer les résultats dans des fichiers Markdown (pour le rapport)
+
+### a) Toute une session psql dans un fichier (sortie alignée, dans un bloc ```)
+```powershell
+psql -h 127.0.0.1 -U postgres -d centre -P pager=off -f sql\06_rapport_xml.sql > rapport\captures\06_resultats.md 2>&1
+```
+Entoure le contenu collé dans le `.md` de clôtures ``` pour un rendu propre.
+
+### b) Un tableau Markdown directement (séparateur `|` + ligne d'en-tête)
+```powershell
+psql -h 127.0.0.1 -U postgres -d centre -P pager=off -A -F " | " `
+  -c "SELECT zone, count(*) AS nb_mesures FROM v_mesure_plat GROUP BY zone ORDER BY zone;"
+```
+Résultat : un vrai tableau Markdown `| zone | nb_mesures |` copiable tel quel dans le rapport.
+Options utiles : `-A` = unaligned, `-F " | "` = séparateur, `--pset=tuples_only=on` (-t) = sans en-tête/foot.
+
+### c) Le bilan XML dans un fichier (pour l'annexe du rapport)
+```powershell
+psql -h 127.0.0.1 -U postgres -d centre -P pager=off -t -A `
+  -c "SELECT generer_bilan_journalier_xml(DATE '2026-02-01', DATE '2026-02-07')::text" > rapport\captures\bilan_2026-02-01_07.xml
+```
+
+### d) Un EXPLAIN ANALYZE dans le .md (tâche 10)
+```powershell
+psql -h 127.0.0.1 -U postgres -d centre -P pager=off -A -t `
+  -c "EXPLAIN (ANALYZE, VERBOSE, BUFFERS) SELECT count(*) FROM mesure_hydro WHERE instant_mesure >= '2026-02-01' AND instant_mesure < '2026-03-01';" > rapport\captures\explain_pruning.md
+```
+Colle le résultat entre ```sql ... ``` dans le rapport.
+
+### e) Depuis l'intérieur de psql : \o (écrire la sortie dans un fichier)
+```sql
+\o rapport/captures/ma_requete.md
+SELECT ... ;
+\o
+```
+(`\o` seul referme le fichier et revient à l'écran.)
