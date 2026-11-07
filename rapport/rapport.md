@@ -1,153 +1,78 @@
-# Rapport du mini-projet — Réseau de capteurs environnementaux
-## Variante A (hydrométrie, partitionnement mensuel, bilan journalier)
+# Rapport du Mini-Projet CABDD — Réseau de Capteurs Environnementaux (Variante A)
 
-**Module :** Concepts avancés de BD — ING 4 GL 2026/2027
-**SGBD :** PostgreSQL 16/18 · **Architecture :** 3 bases (`centre`, `zone1`, `zone2`)
-**Données traitées :** 1 440 lots XML (12 stations × 120 jours), **34 576 mesures** reçues.
-
----
-
-## Étape 1 — Modélisation du réseau (schéma relationnel-objet)
-
-### 1.1 Objets composés
-Trois types composés ont été définis (`sql/01_schema.sql`) :
-
-- `type_position(latitude, longitude, altitude)` pour la position d'une station ;
-- `type_air(pm25, pm10, no2)` pour une mesure de qualité de l'air ;
-- `type_hydro(humidite, pluie)` pour une mesure d'hydrométrie (variante A).
-
-**Pourquoi un type plutôt que des colonnes ?** Une position ou une mesure d'air forme *un tout sémantique* : on la manipule d'un bloc (`(pos).latitude`, `ROW(...)::type_air`), on la passe à une fonction (`distance_km(p1, p2)`), et sa cohérence interne (3 composantes toujours présentes ensemble) est garantie par le type lui-même. C'est exactement ce que la syntaxe Oracle (`OBJECT`, `VARRAY`) permettrait d'écrire nativement ; avec PostgreSQL, les *composite types* + la notation `(col).champ` jouent le même rôle.
-
-### 1.2 Hiérarchie de capteurs (héritage de tables)
-```
-capteur (code, station_code, type, mise_en_service, retrait, etat)
-├── capteur_temperature
-├── capteur_air
-└── capteur_hydro
-```
-`SELECT * FROM capteur` renvoie **les 36 capteurs quel que soit leur type** : la généralisation est réelle. Chaque table fille ajoute une contrainte `CHECK (type = '...')` qui empêche d'y insérer un capteur d'un autre type. La table `mesure` est également hiérarchisée (`mesure_temperature`, `mesure_air`, `mesure_hydro`).
-
-### 1.3 Un schéma qui se protège seul
-- **Valeur impossible** : `CHECK` sur chaque table fille — ex. `mesure_hydro` impose `humidite BETWEEN 0 AND 100`, `pluie BETWEEN 0 AND 1000` ; la base **refuse l'insert** (test 2 de `07_tests_integrite.sql` : `humidite=130` → `check_violation`).
-- **Capteur inexistant** : `mesure.capteur_code REFERENCES capteur(code)` — la FK porte sur la table *mère*, donc tout niveau de la hiérarchie est accepté et tout capteur inconnu est refusé (test 1).
-- **Cohérence croisée** : un trigger `verif_type_capteur()` refuse une mesure de température sur un capteur de type air (test 3).
-- **Position invalide** : `CHECK` sur `station` (latitudes/longitudes/altitude bornées).
-
-### 1.4 Opérations définies dans la base
-- `distance_km(p1, p2)` — formule de Haversine sur les objets `type_position` (ex. BJ-01 ↔ JJ-01 = **64,084 km**) ;
-- `depasse_seuil(capteur, grandeur, valeur)` — teste la valeur contre le référentiel `seuil` (borne min/max) ;
-- `celsius_vers_fahrenheit(t)` et `mm_vers_cm(mm)` — conversions d'unité pour la variante A.
-
-Toutes s'utilisent dans une requête SQL ordinaire, ex. :
-```sql
-SELECT c.code, v.grandeur, v.valeur, depasse_seuil(c.code, v.grandeur, v.valeur)
-FROM vue_mesure_plat v JOIN capteur c ON c.code = v.capteur_code
-WHERE depasse_seuil(c.code, v.grandeur, v.valeur);
-```
-
-### 1.5 Réponses aux questions de l'étape 1
-- **Hiérarchie et intégrité des mesures :** oui — la FK vers la table mère couvre tous les descendants (vérifié par le test 1), et le trigger de type ferme la dernière faille (test 3).
-- **Syntaxe Oracle :** `CREATE TYPE ... AS OBJECT`, `REF`, méthodes `MEMBER FUNCTION` auraient permis d'écrire les opérations *dans* le type. PostgreSQL n'a pas de méthodes sur les types composés ; on écrit des fonctions SQL qui *prennent* les objets en paramètre — c'est l'équivalent fonctionnel.
+- **Module :** Concepts Avancés de Bases de Données (CABDD) — Dr S. Chabane - Mechiouri
+- **Université de Béjaïa** — Faculté des Sciences Exactes — Département Informatique — **ING 4 GL (2026/2027)**
+- **Binôme :** **Merzouk Amine** & **Megharba Samou**
+- **Variante :** **Variante A** (Zone 1 : Béjaïa, Jijel | Zone 2 : Sétif, Bordj Bou Arréridj | Capteur spécifique : Hydrométrie | Partitions mensuelles | Bilan journalier XML)
 
 ---
 
-## Étape 2 — Faire entrer les données (XML, 100 % en SQL)
+## Introduction & Architecture des Scripts
 
-### 2.1 Chargement sans programme externe
-`sql/03_lots_xml.sql` lit le fichier avec `pg_read_file()`, découpe les lots avec `xpath('/lots/lot', ...)`, et chaque `<mesure>` avec `xpath('/lot/mesure', ...)`. Aucun Python, aucune conversion préalable : tout est SQL (`INSERT ... SELECT` sur des `unnest(xpath(...))`).
-
-### 2.2 Aucune mesure perdue — isolement 100 %
-Chaque mesure est classée par un `CASE` de validation (ordre de priorité : capteur inconnu → format invalide → valeur manquante → valeur impossible → doublon) puis :
-- valide → insérée dans la table typée correspondante ;
-- corrompue → insérée dans `mesure_isolee` avec **son lot, sa forme XML d'origine et le motif**.
-
-**Résultat obtenu :** `total_fichier = 34 576 = 34 560 valides + 16 isolées` → `controle_ok = t`.
-
-| Motif | Nombre |
-|---|---|
-| valeur_impossible | 6 |
-| valeur_manquante | 3 |
-| format_invalide | 3 |
-| capteur_inconnu | 2 |
-| doublon | 2 |
-
-### 2.3 Lots bruts interrogeables
-La table `lot_brut` conserve chaque lot en `xml`. Exemples exécutés :
-```sql
--- lots contenant une mesure du capteur BJ-01-T1
-SELECT * FROM lot_brut
-WHERE array_length(xpath('/lot/mesure[@capteur="BJ-01-T1"]', contenu), 1) > 0;
--- nombre de mesures par lot
-SELECT id, station, array_length(xpath('/lot/mesure', contenu), 1) FROM lot_brut;
-```
-
-### 2.4 Rapport XML (bilan journalier, variante A)
-`rapport_bilan_journalier(p_debut, p_fin)` (dans `04_rapport_xml.sql`) produit, par une seule requête :
-```xml
-<rapport type="bilan-journalier" variante="variante-A" periode_debut="2026-01-01" periode_fin="2026-01-31">
-  <jour date="2026-01-01">
-    <station code="BJ-01" wilaya="Béjaïa">
-      <grandeur nom="humidite" min="15.00" max="79.60" moyenne="46.70" nb_mesures="8"/>
-      <grandeur nom="temperature" min="2.50" max="28.50" moyenne="18.73" nb_mesures="8"/>
-      ...
-```
-**Justification de la structure :** imbrication `jour → station → grandeur` car le bilan est *par jour, par station et par grandeur* ; les agrégats (min/max/moyenne/nb) sont des **attributs** de `<grandeur>` car ce sont des valeurs scalaires étiquetées, tandis que les entités (jour, station) sont des éléments portant leur identité en attribut (`date`, `code`).
-
-### 2.5 Réponses aux questions de l'étape 2
-- **Erreur imprévue :** le `CASE` renvoie `NULL` (valide) uniquement si tous les tests passent ; une erreur *non prévue* bascule dans le `CHECK` de la table cible à l'insert, qui lève une exception — le chargement d'un lot isolé ne fait jamais échouer les autres mesures (elles sont classées individuellement).
-- **Doublon vs nouvelle mesure :** un doublon est une mesure dont le couple `(capteur, instant)` existe déjà (en base ou déjà vu dans le même lot) — on garde la première occurrence (`min(rid)`), les suivantes sont isolées avec le motif `doublon`.
-- **Pourquoi garder les lots bruts :** les tables de mesures ont *perdu la forme d'origine* (après validation/aplatissage) ; les lots bruts servent de preuve, permettent de réinterroger le flux tel quel (capteur donné, comptage par lot) et de réparer manuellement une mesure isolée.
+Le projet implémente sous **PostgreSQL 18** la gestion complète d'un réseau national de 12 stations environnementales (36 capteurs) réparties en deux zones géographiques autonomes pilotées par un centre national.  
+L'ensemble est reconstruit sans erreur sur une installation vierge par l'exécution séquentielle des scripts numérotés `sql/01_init_bases.sql` à `sql/10_tests_et_plans.sql`.
 
 ---
 
-## Étape 3 — Répartir sans perdre la vue d'ensemble
+## Étape 1 — Modélisation Relationnelle-Objet (`centre`)
 
-### 3.1 Les trois bases
-- `centre` : référentiel complet (seule base où il est modifié) + **vue transparente** sur toutes les mesures ;
-- `zone1` / `zone2` : mesures de leur zone uniquement, **partitionnées par mois** (`mesure_2026_01` … `mesure_defaut`), copie locale du référentiel.
+### 1.1 Choix des types composés (`t_position`, `t_qualite_air`, `t_hydrometrie`)
+*(Section Merzouk Amine — à compléter après `sql/02_schema_ro.sql`)*
+- Pourquoi regrouper `(latitude, longitude, altitude)` dans `t_position`, `(pm25, pm10, no2)` dans `t_qualite_air` et `(humidite, pluie)` dans `t_hydrometrie` plutôt que des colonnes isolées : cohésion sémantique d'une observation multi-composantes, manipulation atomique et passage direct aux fonctions métier.
 
-### 3.2 Partitionnement temporel (mensuel, variante A)
-Dans chaque zone, `mesure` est `PARTITION BY RANGE (instant)` avec une partition par mois. **Preuve d'élagage** (plan exécuté sur `zone1`) :
-```
-EXPLAIN SELECT count(*), avg(valeur) FROM mesure
-WHERE grandeur='humidite' AND instant >= '2026-02-01' AND instant < '2026-03-01';
-→ Seq Scan on mesure_2026_02 mesure        -- SEULE la partition de février est lue
-```
-Une requête sur un mois ne parcourt donc que les données de ce mois.
+### 1.2 Hiérarchie de capteurs (`INHERITS`), intégrité et comparaison Oracle vs PostgreSQL
+*(Section Merzouk Amine — à compléter après `sql/02_schema_ro.sql`)*
+- Généralisation `capteur` $\rightarrow$ `capteur_temperature`, `capteur_air`, `capteur_hydro` (`SELECT * FROM capteur` restitue les **36 capteurs**).
+- Limites natives de `INHERITS` sous PostgreSQL (non-propagation automatique des `PRIMARY KEY`, `UNIQUE` et `FOREIGN KEY` aux tables filles) et verrouillage complet par contraintes `CHECK` + triggers PL/pgSQL.
+- Comparaison avec la syntaxe objet d'Oracle (`CREATE TYPE ... UNDER`, `CREATE TABLE OF`, `REF` / `SCOPE IS`, `MEMBER FUNCTION`).
 
-### 3.3 Transparence pour le centre (postgres_fdw)
-Depuis `centre`, des tables distantes (`z1.mesure`, `z2.mesure`, etc.) sont déclarées via `postgres_fdw` ; la vue `mesure` = `z1.mesure UNION ALL z2.mesure`. **Résultat :** `SELECT count(*) FROM mesure` depuis le centre renvoie **69 120 lignes** (les 34 560 mesures valides × leurs grandeurs) comme si tout était local. Répartition constatée pour mars 2026 : zone 1 = 1 488 températures, zone 2 = 1 488.
-
-**Écriture transparente :** un trigger `INSTEAD OF INSERT` sur la vue `mesure` route la mesure vers la bonne zone (d'après la zone de la station du capteur) — test : `INSERT INTO mesure ... VALUES ('BJ-01-T1', ...)` atterrit physiquement dans `zone1` avec l'id `2000000000001`.
-
-### 3.4 Référentiel propagé automatiquement
-Des triggers `AFTER INSERT/UPDATE/DELETE` sur `station`, `capteur`, `seuil` (hérités par les tables filles) répliquent chaque modification vers `z1.*` et `z2.*`. **Test :** la station `BJ-04` ajoutée au centre apparaît aussitôt dans les deux zones (`centre=1, zone1=1, zone2=1`). Les mesures, elles, ne sont **pas** propagées (chaque zone garde l'autonomie de ses données).
-
-### 3.5 Identifiants uniques sur tout le réseau
-Schéma par plages : zone 1 → offset `0`, zone 2 → offset `10^12`, centre → offset `2×10^12` (séquence `seq_mesure_centre`). Deux mesures créées indépendamment dans deux zones ne peuvent jamais partager leur id. **Vérifié :** `count(*) = count(DISTINCT (capteur_code, instant, grandeur)) = 69 121`.
-
-### 3.6 Rapport XML depuis le centre
-`06_rapport_centre.sql` réutilise `rapport_bilan_journalier()` telle quelle (la vue `vue_mesure_plat` a été redéfinie sur la vue distribuée) : le rapport de février 2026 est produit depuis `centre` sur les données réparties.
-
-### 3.7 Réponses aux questions de l'étape 3
-- **Requête centre sur 1 zone + 1 mois :** côté centre, le plan montre `Foreign Scan` vers la zone visée ; côté zone, l'élagage ne garde que la partition du mois (cf. §3.2).
-- **Zone indisponible :** la requête du centre échoue sur la partie distante concernée (FDW = accès distant synchrone) ; l'autre zone reste interrogeable individuellement (`SELECT ... FROM z1.mesure`).
-- **Ce qui est propagé :** stations, capteurs, seuils (insert/update/delete). **Ce qui ne l'est pas :** les mesures (restent locales à leur zone) et les lots bruts/mesures isolées (spécifiques au centre).
+### 1.3 Chargement du référentiel CSV et opérations en base
+*(Section Megharba Samou — `sql/03_operations_ro.sql` & `sql/04_referentiel_csv.sql`)*
+- Référentiel chargé depuis les fichiers plats officiels : **12 stations**, **36 capteurs** (dont `BJ-02-A1` mis en service le `2026-02-02` et `JJ-02-T1` retiré le `2026-03-17`), et **6 seuils d'alerte**.
+- Opérations sur objets :
+  - `distance_km(t_position, t_position)` (Haversine) et `distance_stations_km('BJ-01', 'SE-01')` ;
+  - `depasse_seuil_temperature`, `depasse_seuil_air`, `depasse_seuil_hydro` et `seuils_franchis` ;
+  - `celsius_vers_fahrenheit`, `pluie_mm_vers_pouces` et `point_de_rosee`.
 
 ---
 
-## Résultats récapitulatifs
-| Indicateur | Valeur |
-|---|---|
-| Mesures reçues (fichier XML) | 34 576 |
-| Mesures valides chargées | 34 560 |
-| Mesures isolées (100 % des corrompues) | 16 |
-| Contrôle valides + isolées = total | ✅ 34 576 = 34 576 |
-| Stations / capteurs / seuils | 12 / 36 / 8 |
-| Lignes vues du centre (réseau entier) | 69 120 (+1 de test) |
-| Insertions refusées par la base (tests) | 3/3 ✅ |
-| Rapport XML généré depuis le centre | ✅ (janvier et février 2026) |
+## Étape 2 — Échanges XML et Qualité des Données (100 % SQL)
 
-## Limites et améliorations possibles
-- Le chargement XML par `xpath` en masse est fonctionnel mais peut être accéléré (table `xmltable` + index) sur de très gros volumes.
-- Si une zone tombe, aucune dégradation automatique : on pourrait ajouter une vue de secours ou de la réplication logique en complément du FDW.
+### 2.1 Chargement de `lots_A.xml`, conservation brute et isolement des anomalies
+*(Section Merzouk Amine — à compléter avec les captures d'exécution de `sql/05_chargement_xml.sql`)*
+
+| Indicateur sur `data/lots_A.xml` | Effectif attendu / vérifié |
+| :--- | :---: |
+| Lots journaliers conservés dans `lot_brut` | **1 440** |
+| **Total des mesures lues dans `lots_A.xml`** | **33 974** |
+| **Mesures valides insérées en tables** | **33 280** |
+| **Mesures rejetées dans `mesure_isolee`** | **694** |
+| — dont `valeur_impossible` | 296 |
+| — dont `valeur_manquante` | 194 |
+| — dont `format_invalide` | 174 |
+| — dont `capteur_inconnu` | 15 |
+| — dont `doublon` | 15 |
+| **Contrôle sans perte (`33 280 + 694 = 33 974`)** | **OK** |
+
+- Réaction face à une erreur imprévue, distinction doublon vs nouvelle mesure, et intérêt de conserver `lot_brut` interrogeable en XPath.
+
+### 2.2 Rapport XML « Bilan journalier » (Variante A)
+*(Section Megharba Samou — `sql/06_rapport_xml.sql`)*
+- Justification de la hiérarchie `<bilanJournalier debut="..." fin="...">` $\rightarrow$ `<jour>` $\rightarrow$ `<station>` $\rightarrow$ `<grandeur>` avec éléments `<min>`, `<max>`, `<moyenne>` et attribut `nbMesures`.
+- Prise en compte stricte des dates de mise en service (`BJ-02-A1`) et de retrait (`JJ-02-T1`).
+- *(Insérer ici un extrait commenté généré sur février 2026).*
+
+---
+
+## Étape 3 — Répartition entre `centre`, `zone1` et `zone2`
+
+### 3.1 Identifiants uniques globaux et propagation du référentiel
+*(Section Merzouk Amine — à compléter après `sql/07` & `sql/08_propagation_referentiel.sql`)*
+- Séquences décalées (impaires sur `zone1`, paires sur `zone2`) garantissant zéro collision sans coordination centrale.
+- Propagation automatique `centre` $\rightarrow$ `zone1`, `zone2` via `postgres_fdw` et triggers sur toute la hiérarchie ; analyse des modifications propagées et non propagées.
+
+### 3.2 Partitionnement mensuel, transparence FDW et plans d'exécution
+*(Section Megharba Samou — à compléter après `sql/07`, `sql/09` & `sql/10`)*
+- Partitionnement `PARTITION BY RANGE (instant_mesure)` par mois dans `zone1` et `zone2`.
+- Vues fédérées sur `centre` + routage automatique `INSTEAD OF INSERT` + exécution du Bilan journalier XML depuis `centre`.
+- Plans `EXPLAIN (ANALYZE, VERBOSE)` commentés (requête ciblant **1 seule zone** et **1 seul mois**) et comportement lors de l'indisponibilité d'une zone.

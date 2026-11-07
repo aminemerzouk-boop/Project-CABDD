@@ -5,6 +5,11 @@
 - **Binôme :** **Merzouk Amine** & **Megharba Samou**
 - **Variante retenue :** **Variante A**
 
+![Vue d'ensemble du Mini-Projet CABDD — Variante A](docs/schema_resume_projet.png)
+
+> Guide visuel complet : [`docs/guide_visuel_projet.md`](docs/guide_visuel_projet.md)  
+> Installation Windows 11 + PostgreSQL + VS Code & Bilan de `main` : [`docs/guide_installation_windows11.md`](docs/guide_installation_windows11.md)
+
 ---
 
 ## 1. Caractéristiques de notre Variante A
@@ -61,18 +66,25 @@ Afin d'avancer **en parallèle sans blocage** et de **maîtriser chacun les 3 é
 
 Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt des fichiers dans `data/`) :
 
-| Ordre | Fichier | Responsable | Rôle |
-| :---: | :--- | :--- | :--- |
-| **01** | `sql/01_init_bases.sql` | Megharba Samou | Création des bases `centre`, `zone1`, `zone2` et extensions |
-| **02** | `sql/02_schema_ro.sql` | Merzouk Amine | Types composés, hiérarchie `capteur*`, tables et triggers d'intégrité |
-| **03** | `sql/03_operations_ro.sql` | Megharba Samou | Fonctions sur objets (distance km, seuils, conversions Variante A) |
-| **04** | `sql/04_referentiel_csv.sql` | Megharba Samou | Transformation des 3 CSV plats vers le modèle RO + tests contraintes |
-| **05** | `sql/05_chargement_xml.sql` | Merzouk Amine | Lecture SQL de `lots_A.xml`, XPath sur lots bruts, tri valides / isolées |
-| **06** | `sql/06_rapport_xml.sql` | Megharba Samou | Requête/fonction SQL/XML du **Bilan journalier** paramétré |
-| **07** | `sql/07_zones_partitions.sql` | Samou & Amine | Schémas `zone1` & `zone2`, partitions mensuelles et séquences pair/impair |
-| **08** | `sql/08_propagation_referentiel.sql` | Merzouk Amine | Serveurs FDW et propagation automatique du référentiel `centre` $\rightarrow$ zones |
-| **09** | `sql/09_centre_transparent.sql` | Megharba Samou | Vues globales sur `centre`, routage `INSTEAD OF INSERT`, bilan XML réparti |
-| **10** | `sql/10_tests_et_plans.sql` | Amine & Samou | Batterie de validation complète, `EXPLAIN ANALYZE` et test panne d'une zone |
+| Ordre | Fichier | Responsable | Statut | Rôle |
+| :---: | :--- | :--- | :---: | :--- |
+| **01** | `sql/01_init_bases.sql` | Megharba Samou | ✅ Prêt | Création des bases `centre`, `zone1`, `zone2` et extensions |
+| **02** | `sql/02_schema_ro.sql` | Merzouk Amine | 🔜 À faire | Types composés, hiérarchie `capteur*`, tables et triggers d'intégrité |
+| **03** | `sql/03_operations_ro.sql` | Megharba Samou | ✅ Prêt | Fonctions sur objets (distance km, seuils, conversions Variante A) |
+| **04** | `sql/04_referentiel_csv.sql` | Megharba Samou | ✅ Prêt | Transformation des 3 CSV plats vers le modèle RO + tests contraintes |
+| **05** | `sql/05_chargement_xml.sql` | Merzouk Amine | 🔜 À faire | Lecture SQL de `lots_A.xml`, XPath sur lots bruts, tri valides / isolées |
+| **06** | `sql/06_rapport_xml.sql` | Megharba Samou | ✅ Prêt | Requête/fonction SQL/XML du **Bilan journalier** paramétré |
+| **07** | `sql/07_zones_partitions.sql` | Samou & Amine | ⏳ À faire | Schémas `zone1` & `zone2`, partitions mensuelles et séquences pair/impair |
+| **08** | `sql/08_propagation_referentiel.sql` | Merzouk Amine | 🔜 À faire | Serveurs FDW et propagation automatique du référentiel `centre` $\rightarrow$ zones |
+| **09** | `sql/09_centre_transparent.sql` | Megharba Samou | ⏳ À faire | Vues globales sur `centre`, routage `INSTEAD OF INSERT`, bilan XML réparti |
+| **10** | `sql/10_tests_et_plans.sql` | Amine & Samou | ⏳ À faire | Batterie de validation complète, `EXPLAIN ANALYZE` et test panne d'une zone |
+
+### Exécution rapide sous Windows 11 (PowerShell)
+```powershell
+.\run_all.ps1 -StopAt 4   # Tester l'Étape 1 (scripts 01 à 04)
+.\run_all.ps1 -StopAt 6   # Tester les Étapes 1 et 2 (scripts 01 à 06)
+.\run_all.ps1             # Tout rejouer de 01 à 10
+```
 
 ---
 
@@ -81,47 +93,13 @@ Sur une instance PostgreSQL vierge (depuis la racine du dépôt, après dépôt 
 - [`docs/contrat_conception_variante_A.md`](docs/contrat_conception_variante_A.md) : Contrat technique figé entre Amine et Samou (noms exacts des types, colonnes, tables et signatures de fonctions).
 - [`docs/plan_rapport_10_pages.md`](docs/plan_rapport_10_pages.md) : Répartition page par page du rapport final (10 pages max) et liste de toutes les questions théoriques/pratiques de l'énoncé.
 - [`data/README.md`](data/README.md) : Emplacement des 4 fichiers de la Variante A (`stations_A.csv`, `capteurs_A.csv`, `seuils_A.csv`, `lots_A.xml`).
+- [`rapport/rapport.md`](rapport/rapport.md) : Trame du rapport final avec les chiffres officiels vérifiés (`33 974 = 33 280 + 694`).
 
 ---
 
 ## 5. Checklist d'Avancement par Étape
 
-- [ ] **Démarrage** : Télécharger `stations_A.csv`, `capteurs_A.csv`, `seuils_A.csv` et `lots_A.xml` dans `data/` et vérifier les en-têtes exacts.
-- [ ] **Fin Étape 1** : `01` à `04` s'exécutent sans erreur ; les 36 capteurs remontent via `SELECT * FROM capteur` ; les valeurs impossibles et capteurs inconnus sont rejetés ; les 3 opérations fonctionnent. *(Revue croisée Amine $\leftrightarrow$ Samou)*
-- [ ] **Fin Étape 2** : `05` et `06` chargent `lots_A.xml` en pur SQL ; `nb_valides + nb_isolees = nb_total_xml` ; les lots bruts répondent aux requêtes XPath ; le Bilan journalier XML est généré. *(Revue croisée Amine $\leftrightarrow$ Samou)*
+- [x] **Démarrage** : Fichiers officiels `stations_A.csv`, `capteurs_A.csv`, `seuils_A.csv` et `lots_A.xml` déposés dans `data/`.
+- [ ] **Fin Étape 1** : `01` à `04` s'exécutent sans erreur ; les 36 capteurs remontent via `SELECT * FROM capteur` ; les valeurs impossibles et capteurs inconnus sont rejetés ; les 3 opérations fonctionnent. *(Il ne manque plus que `02_schema_ro.sql` d'Amine !)*
+- [ ] **Fin Étape 2** : `05` et `06` chargent `lots_A.xml` en pur SQL ; `nb_valides + nb_isolees = nb_total_xml` ; les lots bruts répondent aux requêtes XPath ; le Bilan journalier XML est généré. *(Il ne manque plus que `05_chargement_xml.sql` d'Amine !)*
 - [ ] **Fin Étape 3** : `07` à `10` répartissent les mesures par mois dans `zone1` et `zone2` ; `centre` interroge et insère de façon transparente ; la propagation du référentiel est automatique ; les plans `EXPLAIN ANALYZE` sont capturés et commentés dans le rapport de 10 pages.
-
----
-
-## Implémentation (branche `arena/614d54cb-project-cabdd`)
-
-### Outils nécessaires
-- **Docker + docker compose** : 3 conteneurs `postgres:16` (`centre`, `zone1`, `zone2`) — voir `docker-compose.yml`
-- **VS Code** + extensions recommandées (`.vscode/extensions.json`) : client PostgreSQL (connexions préconfigurées dans `.vscode/settings.json`), XML (RedHat), Docker
-- **Git** : versioning des scripts SQL numérotés
-- **psql** (client PostgreSQL) et **Python 3 (stdlib)** pour régénérer des données de démo (`data/generer_donnees.py`) si besoin
-
-### Arborescence de l'implémentation
-```
-├── docker-compose.yml          # 3 conteneurs PostgreSQL (ports 5433/5434/5435)
-├── run_all.sh                  # rejoue tout le projet dans l'ordre (modes --docker / --cluster)
-├── sql/
-│   ├── 00_init.sql             # création des 3 bases (mode cluster unique)
-│   ├── 01_schema.sql           # étape 1 : schéma relationnel-objet (centre)
-│   ├── 02_referentiel.sql      # étape 1 : chargement CSV du référentiel
-│   ├── 03_lots_xml.sql         # étape 2 : chargement XML 100% SQL + isolement
-│   ├── 04_rapport_xml.sql      # étape 2 : rapport XML bilan journalier
-│   ├── 05b_zone.sql            # étape 3 : schéma d'une zone (partitionnement mensuel)
-│   ├── 05_distribution_centre.sql  # étape 3 : FDW, transparence, propagation du référentiel
-│   ├── 06_rapport_centre.sql   # étape 3 : rapport + démonstrations depuis le centre
-│   └── 07_tests_integrite.sql  # preuves que le schéma se protège seul
-└── rapport/rapport.md          # rapport (3 étapes, ≤ 10 pages)
-```
-
-### Exécution rapide
-```bash
-docker compose up -d
-./run_all.sh --docker
-# ou en cluster unique :
-./run_all.sh --cluster "psql -h 127.0.0.1 -p 5432 -U postgres"
-```

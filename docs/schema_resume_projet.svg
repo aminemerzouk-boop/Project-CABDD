@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1620" height="1380" viewBox="0 0 1620 1380">
+  <defs>
+    <style>
+      text { font-family: 'DejaVu Sans', sans-serif; fill: #0f172a; }
+      .mono { font-family: 'DejaVu Sans Mono', monospace; }
+      .title { font-size: 22px; font-weight: bold; fill: #ffffff; }
+      .subtitle { font-size: 14px; fill: #cbd5e1; }
+      .step-title { font-size: 18px; font-weight: bold; }
+      .card-title { font-size: 14.5px; font-weight: bold; fill: #0f172a; }
+      .body { font-size: 13px; fill: #334155; }
+      .small { font-size: 12px; fill: #475569; }
+      .badge-text { font-size: 11px; font-weight: bold; fill: #ffffff; }
+      .arrow-label { font-size: 12px; font-weight: bold; }
+    </style>
+
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#047857"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1620" height="1380" fill="#f8fafc"/>
+
+  <!-- ================= HEADER BANNER ================= -->
+  <rect x="30" y="20" width="1550" height="92" rx="14" fill="#0f172a"/>
+  <text x="56" y="56" class="title">Vue d'ensemble du Mini-Projet CABDD — Réseau de Capteurs (Variante A)</text>
+  <text x="56" y="84" class="subtitle">12 stations (4 wilayas) • 36 capteurs (Température, Air, Hydrométrie) • PostgreSQL Relationnel-Objet, XML &amp; Distribution</text>
+
+  <!-- Legend in header -->
+  <rect x="1135" y="34" width="225" height="26" rx="13" fill="#1d4ed8"/>
+  <text x="1247" y="51" text-anchor="middle" class="badge-text">AMINE : Modèle RO, XML In, Prop.</text>
+  <rect x="1135" y="68" width="225" height="26" rx="13" fill="#047857"/>
+  <text x="1247" y="85" text-anchor="middle" class="badge-text">SAMOU : CSV/Op., XML Out, Part.</text>
+  <rect x="1374" y="34" width="190" height="60" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="1469" y="55" text-anchor="middle" style="font-size:12px; font-weight:bold; fill:#f8fafc;">Livrables finaux :</text>
+  <text x="1469" y="73" text-anchor="middle" style="font-size:11px; fill:#cbd5e1;">• Scripts SQL numérotés</text>
+  <text x="1469" y="88" text-anchor="middle" style="font-size:11px; fill:#cbd5e1;">• Rapport ≤ 10 pages</text>
+
+  <!-- ================= ROW 0 : FICHIERS D'ENTRÉE (data/) ================= -->
+  <rect x="30" y="128" width="1550" height="118" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="52" y="154" class="step-title" fill="#334155">0. LES FICHIERS FOURNIS DANS data/ (Point de départ)</text>
+
+  <!-- CSV Input Box -->
+  <rect x="52" y="166" width="720" height="66" rx="10" fill="#ffffff" stroke="#047857" stroke-width="2"/>
+  <rect x="650" y="174" width="108" height="22" rx="11" fill="#047857"/>
+  <text x="704" y="189" text-anchor="middle" class="badge-text">SAMOU (04)</text>
+  <text x="70" y="190" class="card-title">Référentiel initial (3 fichiers CSV plats)</text>
+  <text x="70" y="213" class="body"><tspan class="mono" font-weight="bold">stations_A.csv</tspan> (12 stations)  •  <tspan class="mono" font-weight="bold">capteurs_A.csv</tspan> (36 capteurs)  •  <tspan class="mono" font-weight="bold">seuils_A.csv</tspan> (6 seuils)</text>
+
+  <!-- XML Input Box -->
+  <rect x="810" y="166" width="748" height="66" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="1436" y="174" width="108" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="1490" y="189" text-anchor="middle" class="badge-text">AMINE (05)</text>
+  <text x="828" y="190" class="card-title">Flux nocturne des stations : <tspan class="mono">lots_A.xml</tspan> (1er janv. → 30 avr. 2026)</text>
+  <text x="828" y="213" class="body">1 440 lots journaliers = <tspan font-weight="bold">33 974 mesures</tspan> en attributs XML (contient 5 types d'erreurs !)</text>
+
+  <!-- Arrow CSV -> Etape 1 -->
+  <line x1="412" y1="232" x2="412" y2="268" stroke="#047857" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <text x="424" y="255" class="arrow-label" fill="#047857">Transformation plat → objets</text>
+
+  <!-- ================= ÉTAPE 1 : RELATIONNEL-OBJET ================= -->
+  <rect x="30" y="272" width="1550" height="248" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+  <rect x="30" y="272" width="1550" height="38" rx="14" fill="#dbeafe"/>
+  <text x="52" y="297" class="step-title" fill="#1e3a8a">ÉTAPE 1 — Modéliser le réseau en Relationnel-Objet (dans la base « centre »)</text>
+
+  <!-- Card 1A: Types composés -->
+  <rect x="52" y="324" width="470" height="180" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="402" y="334" width="106" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="455" y="349" text-anchor="middle" class="badge-text">AMINE (02)</text>
+  <text x="70" y="349" class="card-title">1. Types composés (un seul bloc)</text>
+  <text x="70" y="376" class="body">• <tspan class="mono" font-weight="bold">t_position</tspan> : (latitude, longitude, altitude)</text>
+  <text x="70" y="400" class="body">• <tspan class="mono" font-weight="bold">t_qualite_air</tspan> : (pm25, pm10, no2) en µg/m³</text>
+  <text x="70" y="424" class="body">• <tspan class="mono" font-weight="bold">t_hydrometrie</tspan> : (humidite %, pluie mm) [Var. A]</text>
+  <rect x="70" y="440" width="434" height="50" rx="6" fill="#eff6ff"/>
+  <text x="82" y="460" class="small" fill="#1e40af" font-weight="bold">Auto-protection par la base (CHECK) :</text>
+  <text x="82" y="478" class="small">humidité ∈ [0,100], pluie ≥ 0, PM ≥ 0, temp ∈ [-60, 60] °C</text>
+
+  <!-- Card 1B: Hiérarchie INHERITS -->
+  <rect x="544" y="324" width="508" height="180" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="932" y="334" width="106" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="985" y="349" text-anchor="middle" class="badge-text">AMINE (02)</text>
+  <text x="562" y="349" class="card-title">2. Hiérarchie d'héritage (<tspan class="mono">INHERITS</tspan>)</text>
+  <!-- Mini inheritance tree -->
+  <rect x="718" y="364" width="160" height="30" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="798" y="384" text-anchor="middle" class="mono" font-size="13" font-weight="bold">capteur (mère)</text>
+  <line x1="798" y1="394" x2="632" y2="418" stroke="#1d4ed8" stroke-width="1.5"/>
+  <line x1="798" y1="394" x2="798" y2="418" stroke="#1d4ed8" stroke-width="1.5"/>
+  <line x1="798" y1="394" x2="964" y2="418" stroke="#1d4ed8" stroke-width="1.5"/>
+  <rect x="560" y="418" width="144" height="28" rx="5" fill="#f8fafc" stroke="#64748b"/>
+  <text x="632" y="436" text-anchor="middle" class="mono" font-size="11">capteur_temperature</text>
+  <rect x="724" y="418" width="148" height="28" rx="5" fill="#f8fafc" stroke="#64748b"/>
+  <text x="798" y="436" text-anchor="middle" class="mono" font-size="11">capteur_air</text>
+  <rect x="892" y="418" width="144" height="28" rx="5" fill="#f8fafc" stroke="#64748b"/>
+  <text x="964" y="436" text-anchor="middle" class="mono" font-size="11">capteur_hydro</text>
+  <text x="562" y="469" class="small">• <tspan class="mono">SELECT * FROM capteur</tspan> renvoie les 36 capteurs.</text>
+  <text x="562" y="489" class="small">• Triggers PL/pgSQL garantissant PK &amp; FK sur les filles.</text>
+
+  <!-- Card 1C: Opérations en base -->
+  <rect x="1074" y="324" width="484" height="180" rx="10" fill="#ffffff" stroke="#047857" stroke-width="2"/>
+  <rect x="1438" y="334" width="106" height="22" rx="11" fill="#047857"/>
+  <text x="1491" y="349" text-anchor="middle" class="badge-text">SAMOU (03)</text>
+  <text x="1092" y="349" class="card-title">3. Opérations définies sur les objets</text>
+  <text x="1092" y="378" class="body">• <tspan class="mono" font-weight="bold">distance_km(pos1, pos2)</tspan></text>
+  <text x="1108" y="397" class="small">Distance Haversine entre 2 stations (ex. BJ-01 ↔ SE-01)</text>
+  <text x="1092" y="423" class="body">• <tspan class="mono" font-weight="bold">depasse_seuil(...)</tspan></text>
+  <text x="1108" y="442" class="small">Teste si une mesure franchit un seuil de <tspan class="mono">seuil_alerte</tspan></text>
+  <text x="1092" y="468" class="body">• <tspan class="mono" font-weight="bold">celsius_vers_fahrenheit</tspan> / <tspan class="mono" font-weight="bold">pluie_pouces</tspan></text>
+  <text x="1108" y="487" class="small">Conversions d'unités appliquées aux mesures</text>
+
+  <!-- Transition arrows between Etape 1 and Etape 2 -->
+  <!-- 1) Referentiel arrow into Triage -->
+  <line x1="760" y1="520" x2="760" y2="568" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+  <text x="774" y="553" class="arrow-label" fill="#334155">Référentiel prêt (12 stations, 36 capteurs, 6 seuils)</text>
+
+  <!-- 2) lots_A.xml routed cleanly down right margin and across into Card 2A (lot_brut) -->
+  <path d="M 1558 199 L 1598 199 L 1598 538 L 228 538 L 228 620" fill="none" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="7,4" marker-end="url(#arrow-blue)"/>
+  <rect x="242" y="526" width="248" height="22" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="366" y="541" text-anchor="middle" class="arrow-label" fill="#1d4ed8">Entrée XML : data/lots_A.xml</text>
+
+  <!-- ================= ÉTAPE 2 : ÉCHANGES XML (100 % SQL) ================= -->
+  <rect x="30" y="572" width="1550" height="276" rx="14" fill="#fefce8" stroke="#fde047" stroke-width="2"/>
+  <rect x="30" y="572" width="1550" height="38" rx="14" fill="#fef08a"/>
+  <text x="52" y="597" class="step-title" fill="#854d0e">ÉTAPE 2 — Faire entrer les lots XML et générer le Rapport XML (100 % en SQL, sans Python)</text>
+
+  <!-- Card 2A: Lot brut -->
+  <rect x="52" y="626" width="352" height="204" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="286" y="636" width="106" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="339" y="651" text-anchor="middle" class="badge-text">AMINE (05)</text>
+  <text x="68" y="651" class="card-title">1. Lots bruts (<tspan class="mono">lot_brut</tspan>)</text>
+  <text x="68" y="677" class="body">• Lecture via <tspan class="mono">pg_read_file</tspan> + XML</text>
+  <text x="68" y="699" class="body">• <tspan font-weight="bold">1 440 lots</tspan> conservés intacts</text>
+  <rect x="68" y="718" width="320" height="96" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="80" y="738" class="small" font-weight="bold">Interrogeable directement en XPath :</text>
+  <text x="80" y="760" class="small">1) Retrouver les lots d'un capteur donné</text>
+  <text x="80" y="780" class="small">2) Compter les mesures de chaque lot</text>
+  <text x="80" y="800" class="small" fill="#64748b">(sans passer par les tables de mesures)</text>
+
+  <!-- Arrow 2A -> 2B -->
+  <line x1="404" y1="728" x2="438" y2="728" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+
+  <!-- Card 2B: Triage Qualité (valides vs isolées) -->
+  <rect x="442" y="626" width="628" height="204" rx="10" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="950" y="636" width="106" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="1003" y="651" text-anchor="middle" class="badge-text">AMINE (05)</text>
+  <text x="460" y="651" class="card-title">2. Triage qualité des 33 974 mesures (Zéro perte)</text>
+
+  <!-- Valid sub-box -->
+  <rect x="460" y="668" width="276" height="146" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="474" y="691" class="card-title" fill="#15803d">✓ 33 280 Mesures Valides</text>
+  <text x="474" y="714" class="small">Insérées dans les tables typées :</text>
+  <text x="474" y="735" class="small">• <tspan class="mono">mesure_temperature</tspan></text>
+  <text x="474" y="755" class="small">• <tspan class="mono">mesure_air</tspan> (<tspan class="mono">t_qualite_air</tspan>)</text>
+  <text x="474" y="775" class="small">• <tspan class="mono">mesure_hydro</tspan> (<tspan class="mono">t_hydrometrie</tspan>)</text>
+  <text x="474" y="800" class="small" font-weight="bold" fill="#15803d">33 280 + 694 = 33 974 (100 %)</text>
+
+  <!-- Isolated sub-box -->
+  <rect x="754" y="668" width="298" height="146" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="768" y="691" class="card-title" fill="#b91c1c">✗ 694 Isolées (<tspan class="mono">mesure_isolee</tspan>)</text>
+  <text x="768" y="712" class="small">XML d'origine + lot + motif exact :</text>
+  <text x="768" y="732" class="small">• <tspan class="mono">valeur_impossible</tspan> : <tspan font-weight="bold">296</tspan></text>
+  <text x="768" y="750" class="small">• <tspan class="mono">valeur_manquante</tspan>  : <tspan font-weight="bold">194</tspan></text>
+  <text x="768" y="768" class="small">• <tspan class="mono">format_invalide</tspan>   : <tspan font-weight="bold">174</tspan></text>
+  <text x="768" y="786" class="small">• <tspan class="mono">capteur_inconnu</tspan>   : <tspan font-weight="bold">15</tspan></text>
+  <text x="768" y="804" class="small">• <tspan class="mono">doublon</tspan>           : <tspan font-weight="bold">15</tspan></text>
+
+  <!-- Arrow 2B -> 2C -->
+  <line x1="1070" y1="728" x2="1104" y2="728" stroke="#047857" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <!-- Card 2C: Rapport XML Bilan Journalier -->
+  <rect x="1108" y="626" width="450" height="204" rx="10" fill="#ffffff" stroke="#047857" stroke-width="2"/>
+  <rect x="1438" y="636" width="106" height="22" rx="11" fill="#047857"/>
+  <text x="1491" y="651" text-anchor="middle" class="badge-text">SAMOU (06)</text>
+  <text x="1126" y="651" class="card-title">3. Rapport XML Bilan journalier</text>
+  <text x="1126" y="677" class="body">Généré par requête SQL (<tspan class="mono">xmlelement</tspan>, <tspan class="mono">xmlagg</tspan>)</text>
+  <text x="1126" y="699" class="body">pour toute période <tspan class="mono">[date_debut, date_fin]</tspan> :</text>
+  <rect x="1126" y="714" width="414" height="100" rx="6" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="1140" y="736" class="small">Par <tspan font-weight="bold">jour</tspan>, <tspan font-weight="bold">station</tspan> et <tspan font-weight="bold">grandeur</tspan> (6 grandeurs) :</text>
+  <text x="1140" y="758" class="small">→ <tspan font-weight="bold">min</tspan>, <tspan font-weight="bold">max</tspan>, <tspan font-weight="bold">moyenne</tspan>, <tspan font-weight="bold">nb_mesures</tspan> valides</text>
+  <text x="1140" y="782" class="small" fill="#065f46">Respecte <tspan class="mono">mise_en_service</tspan> (BJ-02-A1: 02/02)</text>
+  <text x="1140" y="800" class="small" fill="#065f46">et <tspan class="mono">date_retrait</tspan> (JJ-02-T1: 17/03) !</text>
+
+  <!-- Arrow Etape 2 -> Etape 3 -->
+  <line x1="798" y1="848" x2="798" y2="884" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+  <text x="812" y="871" class="arrow-label" fill="#334155">Passage d'une seule base à 3 bases réparties (postgres_fdw)</text>
+
+  <!-- ================= ÉTAPE 3 : DISTRIBUTION SUR 3 BASES ================= -->
+  <rect x="30" y="888" width="1550" height="468" rx="14" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"/>
+  <rect x="30" y="888" width="1550" height="38" rx="14" fill="#ede9fe"/>
+  <text x="52" y="913" class="step-title" fill="#4c1d95">ÉTAPE 3 — Répartir entre « centre », « zone1 » et « zone2 » sans perdre la vue d'ensemble</text>
+
+  <!-- CENTER DB (Top middle of Etape 3) -->
+  <rect x="355" y="940" width="900" height="156" rx="12" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+  <rect x="355" y="940" width="900" height="34" rx="12" fill="#7c3aed"/>
+  <text x="805" y="963" text-anchor="middle" style="font-size:16px; font-weight:bold; fill:#ffffff;">BASE 1 : « centre » (Centre National — 0 mesure stockée physiquement ici !)</text>
+
+  <!-- Left half of centre: Amine -->
+  <rect x="373" y="984" width="425" height="98" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+  <rect x="678" y="990" width="106" height="20" rx="10" fill="#1d4ed8"/>
+  <text x="731" y="1004" text-anchor="middle" class="badge-text">AMINE (08)</text>
+  <text x="387" y="1006" class="card-title" fill="#1e3a8a">Référentiel Maître &amp; Propagation</text>
+  <text x="387" y="1029" class="small">• Seule base où l'on modifie stations, capteurs, seuils.</text>
+  <text x="387" y="1049" class="small">• Triggers + FDW : tout ajout/changement d'état est</text>
+  <text x="387" y="1067" class="small">  <tspan font-weight="bold">propagé automatiquement</tspan> aux 2 zones.</text>
+
+  <!-- Right half of centre: Samou -->
+  <rect x="813" y="984" width="425" height="98" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <rect x="1118" y="990" width="106" height="20" rx="10" fill="#047857"/>
+  <text x="1171" y="1004" text-anchor="middle" class="badge-text">SAMOU (09)</text>
+  <text x="827" y="1006" class="card-title" fill="#065f46">Vue Globale &amp; Bilan Réparti</text>
+  <text x="827" y="1029" class="small">• Vue globale (<tspan class="mono">zone1 UNION ALL zone2</tspan>) via <tspan class="mono">postgres_fdw</tspan>.</text>
+  <text x="827" y="1049" class="small">• Trigger <tspan class="mono">INSTEAD OF INSERT</tspan> : route vers la bonne zone.</text>
+  <text x="827" y="1067" class="small">• Le <tspan font-weight="bold">Bilan journalier XML</tspan> s'exécute depuis <tspan class="mono">centre</tspan>.</text>
+
+  <!-- Arrows between centre and zone1 / zone2 -->
+  <!-- Left arrows to Zone 1 -->
+  <path d="M 510 1096 L 340 1162" fill="none" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <rect x="240" y="1114" width="174" height="22" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="327" y="1129" text-anchor="middle" class="arrow-label" fill="#1d4ed8">Propagation référentiel</text>
+
+  <path d="M 670 1096 L 520 1162" fill="none" stroke="#047857" stroke-width="2.5" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)"/>
+  <rect x="530" y="1120" width="166" height="22" rx="6" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="613" y="1135" text-anchor="middle" class="arrow-label" fill="#047857">SELECT / INSERT (FDW)</text>
+
+  <!-- Right arrows to Zone 2 -->
+  <path d="M 940 1096 L 1090 1162" fill="none" stroke="#047857" stroke-width="2.5" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)"/>
+  <rect x="914" y="1120" width="166" height="22" rx="6" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="997" y="1135" text-anchor="middle" class="arrow-label" fill="#047857">SELECT / INSERT (FDW)</text>
+
+  <path d="M 1100 1096 L 1270 1162" fill="none" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <rect x="1196" y="1114" width="174" height="22" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="1283" y="1129" text-anchor="middle" class="arrow-label" fill="#1d4ed8">Propagation référentiel</text>
+
+  <!-- ZONE 1 DB (Bottom Left) -->
+  <rect x="56" y="1166" width="684" height="170" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
+  <rect x="56" y="1166" width="684" height="32" rx="12" fill="#0284c7"/>
+  <text x="398" y="1188" text-anchor="middle" style="font-size:15px; font-weight:bold; fill:#ffffff;">BASE 2 : « zone1 » — Béjaïa (BJ-01..03) &amp; Jijel (JJ-01..03)</text>
+  <text x="76" y="1221" class="body">• <tspan font-weight="bold">Copie locale du référentiel</tspan> (pour contrôler ses mesures en autonomie)</text>
+  <text x="76" y="1244" class="body">• <tspan font-weight="bold" fill="#1d4ed8">IDs uniques impairs [AMINE]</tspan> : séquence <tspan class="mono">1, 3, 5, ...</tspan> (aucune collision avec zone2)</text>
+  <text x="76" y="1267" class="body">• <tspan font-weight="bold" fill="#047857">Partitionnement par MOIS [SAMOU (07)]</tspan> (<tspan class="mono">PARTITION BY RANGE (instant)</tspan>) :</text>
+  <!-- Month partition pills Zone 1 -->
+  <rect x="91" y="1282" width="115" height="36" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="148" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_01 (Jan)</text>
+  <rect x="218" y="1282" width="115" height="36" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="275" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_02 (Fév)</text>
+  <rect x="345" y="1282" width="115" height="36" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="402" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_03 (Mar)</text>
+  <rect x="472" y="1282" width="115" height="36" rx="6" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="529" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_04 (Avr)</text>
+  <rect x="599" y="1282" width="120" height="36" rx="6" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="659" y="1305" text-anchor="middle" class="mono" font-size="12">2026_05 / DEF</text>
+
+  <!-- ZONE 2 DB (Bottom Right) -->
+  <rect x="868" y="1166" width="684" height="170" rx="12" fill="#ffffff" stroke="#0d9488" stroke-width="2.5"/>
+  <rect x="868" y="1166" width="684" height="32" rx="12" fill="#0d9488"/>
+  <text x="1210" y="1188" text-anchor="middle" style="font-size:15px; font-weight:bold; fill:#ffffff;">BASE 3 : « zone2 » — Sétif (SE-01..03) &amp; Bordj Bou Arréridj (BB-01..03)</text>
+  <text x="888" y="1221" class="body">• <tspan font-weight="bold">Copie locale du référentiel</tspan> (synchronisée depuis <tspan class="mono">centre</tspan>)</text>
+  <text x="888" y="1244" class="body">• <tspan font-weight="bold" fill="#1d4ed8">IDs uniques pairs [AMINE]</tspan> : séquence <tspan class="mono">2, 4, 6, ...</tspan> (aucune collision avec zone1)</text>
+  <text x="888" y="1267" class="body">• <tspan font-weight="bold" fill="#047857">Partitionnement par MOIS [SAMOU (07)]</tspan> (<tspan class="mono">PARTITION BY RANGE (instant)</tspan>) :</text>
+  <!-- Month partition pills Zone 2 -->
+  <rect x="903" y="1282" width="115" height="36" rx="6" fill="#ccfbf1" stroke="#0d9488"/>
+  <text x="960" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_01 (Jan)</text>
+  <rect x="1030" y="1282" width="115" height="36" rx="6" fill="#ccfbf1" stroke="#0d9488"/>
+  <text x="1087" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_02 (Fév)</text>
+  <rect x="1157" y="1282" width="115" height="36" rx="6" fill="#ccfbf1" stroke="#0d9488"/>
+  <text x="1214" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_03 (Mar)</text>
+  <rect x="1284" y="1282" width="115" height="36" rx="6" fill="#ccfbf1" stroke="#0d9488"/>
+  <text x="1341" y="1305" text-anchor="middle" class="mono" font-size="12" font-weight="bold">2026_04 (Avr)</text>
+  <rect x="1411" y="1282" width="120" height="36" rx="6" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="1471" y="1305" text-anchor="middle" class="mono" font-size="12">2026_05 / DEF</text>
+
+</svg>
