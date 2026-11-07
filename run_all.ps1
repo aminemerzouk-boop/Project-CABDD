@@ -19,6 +19,8 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
+chcp.com 65001 > $null
+[Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 $env:PGPASSWORD = $Password

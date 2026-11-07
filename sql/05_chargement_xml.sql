@@ -56,9 +56,11 @@ DECLARE
     v_mesures_isolees BIGINT := 0;
     r                 RECORD;
 BEGIN
+    SET LOCAL client_min_messages = warning;
     DROP TABLE IF EXISTS tmp_nouveaux_lots;
     DROP TABLE IF EXISTS tmp_mesures_extraites;
     DROP TABLE IF EXISTS tmp_mesures_qualifiees;
+    SET LOCAL client_min_messages = notice;
 
     -- 2.1 Decoupage des elements <lot> et conservation intacte dans lot_brut
     CREATE TEMP TABLE tmp_nouveaux_lots (
