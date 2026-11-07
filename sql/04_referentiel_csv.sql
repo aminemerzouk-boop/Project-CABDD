@@ -58,7 +58,7 @@ FROM st_capteur WHERE type = 'hydro';
 
 -- 2c. Seuils d'alerte
 INSERT INTO seuil_alerte (type_capteur, grandeur, borne, valeur, unite)
-SELECT type, grandeur, borne::borne_seuil_enum, valeur, unite FROM st_seuil;
+SELECT type::type_capteur_enum, grandeur, borne::borne_seuil_enum, valeur, unite FROM st_seuil;
 
 DROP TABLE st_station, st_capteur, st_seuil;
 

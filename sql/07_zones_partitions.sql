@@ -43,7 +43,7 @@ CREATE SEQUENCE seq_mesure INCREMENT BY 2 START WITH :zone_num;
 -- ----------------------------------------------------------------------------
 CREATE TABLE mesure_temperature (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
-    code_capteur VARCHAR(15) NOT NULL REFERENCES capteur(code_capteur),
+    code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
     temperature NUMERIC(5,2) CHECK (temperature BETWEEN -60 AND 65),
     id_lot INT,
@@ -52,7 +52,7 @@ CREATE TABLE mesure_temperature (
 
 CREATE TABLE mesure_air (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
-    code_capteur VARCHAR(15) NOT NULL REFERENCES capteur(code_capteur),
+    code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
     valeurs_air t_qualite_air,
     id_lot INT,
@@ -62,7 +62,7 @@ CREATE TABLE mesure_air (
 
 CREATE TABLE mesure_hydro (
     id_mesure BIGINT NOT NULL DEFAULT nextval('seq_mesure'),
-    code_capteur VARCHAR(15) NOT NULL REFERENCES capteur(code_capteur),
+    code_capteur VARCHAR(15) NOT NULL,  -- FK vers parent INHERITS non fiable : verif_zone() + CHECK couvrent l'intégrité
     instant_mesure TIMESTAMP NOT NULL,
     valeurs_hydro t_hydrometrie,
     id_lot INT,
@@ -105,8 +105,8 @@ INSERT INTO config_zone VALUES (:'zone_num');
 
 CREATE OR REPLACE FUNCTION verif_zone() RETURNS trigger AS $$
 BEGIN
-    IF (SELECT s.zone FROM station s JOIN capteur c ON c.code_station = s.code_station
-        WHERE c.code_capteur = NEW.code_capteur) <> (SELECT zone_num FROM config_zone) THEN
+    IF (SELECT s.zone FROM public.station s JOIN public.capteur c ON c.code_station = s.code_station
+        WHERE c.code_capteur = NEW.code_capteur) <> (SELECT zone_num FROM public.config_zone) THEN
         RAISE EXCEPTION 'La mesure du capteur % appartient à une autre zone', NEW.code_capteur;
     END IF;
     RETURN NEW;
