@@ -234,7 +234,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'INSERT' OR NEW.code_capteur IS DISTINCT FROM OLD.code_capteur THEN
         IF EXISTS (SELECT 1 FROM capteur WHERE code_capteur = NEW.code_capteur) THEN
-            RAISE EXCEPTION 'Le code capteur % existe déjà dans la hiérarchie capteur.', NEW.code_capteur
+            RAISE EXCEPTION 'Le code capteur % existe deja dans la hierarchie capteur.', NEW.code_capteur
                 USING ERRCODE = 'unique_violation';
         END IF;
     END IF;
@@ -264,7 +264,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'DELETE' OR NEW.code_capteur IS DISTINCT FROM OLD.code_capteur THEN
         IF EXISTS (SELECT 1 FROM mesure WHERE code_capteur = OLD.code_capteur) THEN
-            RAISE EXCEPTION 'Suppression/renommage refusé : le capteur % possède des mesures enregistrées.', OLD.code_capteur
+            RAISE EXCEPTION 'Suppression/renommage refuse : le capteur % possede des mesures enregistrees.', OLD.code_capteur
                 USING ERRCODE = 'foreign_key_violation';
         END IF;
     END IF;
@@ -302,14 +302,14 @@ BEGIN
     WHERE c.code_capteur = NEW.code_capteur;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Mesure refusée : le capteur % est absent du référentiel.', NEW.code_capteur
+        RAISE EXCEPTION 'Mesure refusee : le capteur % est absent du referentiel.', NEW.code_capteur
             USING ERRCODE = 'foreign_key_violation';
     END IF;
 
     IF (TG_TABLE_NAME = 'mesure_temperature' AND v_type <> 'temperature')
     OR (TG_TABLE_NAME = 'mesure_air'         AND v_type <> 'air')
     OR (TG_TABLE_NAME = 'mesure_hydro'       AND v_type <> 'hydro') THEN
-        RAISE EXCEPTION 'Incohérence de type : le capteur % est de type %, incompatible avec la table %.',
+        RAISE EXCEPTION 'Incoherence de type : le capteur % est de type %, incompatible avec la table %.',
             NEW.code_capteur, v_type, TG_TABLE_NAME
             USING ERRCODE = 'check_violation';
     END IF;

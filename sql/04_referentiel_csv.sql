@@ -89,8 +89,8 @@ DROP TABLE st_station, st_capteur, st_seuil;
 -- ----------------------------------------------------------------------------
 -- 3. Vérifications de fin d'Étape 1
 -- ----------------------------------------------------------------------------
--- 3a. Polymorphisme : la table mère renvoie les 36 capteurs, quel que soit le type
-SELECT 'capteurs (table mère)' AS table_verifiee, count(*) AS effectif FROM capteur
+-- 3a. Polymorphisme : la table mere renvoie les 36 capteurs, quel que soit le type
+SELECT 'capteurs (table mere)' AS table_verifiee, count(*) AS effectif FROM capteur
 UNION ALL SELECT 'capteur_temperature', count(*) FROM capteur_temperature
 UNION ALL SELECT 'capteur_air',         count(*) FROM capteur_air
 UNION ALL SELECT 'capteur_hydro',       count(*) FROM capteur_hydro
@@ -118,43 +118,43 @@ SELECT * FROM seuils_franchis('air', 'pm25', 30.5);
 -- 3d. Tests de rejet : la base se protège seule (contraintes CHECK + triggers hiérarchie)
 DO $$
 BEGIN
-    -- Test 1 : capteur rattaché à une station inexistante dans une table fille
+    -- Test 1 : capteur rattache a une station inexistante dans une table fille
     BEGIN
         INSERT INTO capteur_hydro (code_capteur, code_station, type_capteur,
                                    date_mise_en_service, date_retrait, etat)
         VALUES ('XX-00-H1', 'XX-00', 'hydro', DATE '2026-01-01', NULL, 'actif');
-        RAISE EXCEPTION 'ECHEC_TEST : capteur orphelin accepté !';
+        RAISE EXCEPTION 'ECHEC_TEST : capteur orphelin accepte !';
     EXCEPTION
         WHEN foreign_key_violation THEN
-            RAISE NOTICE 'OK Test 1 : capteur sans station rattachée refusé.';
+            RAISE NOTICE 'OK Test 1 : capteur sans station rattachee refuse.';
     END;
 
     -- Test 2 : position GPS physiquement impossible (latitude = 999)
     BEGIN
         UPDATE station SET position = ROW(999, 0, 0)::t_position WHERE code_station = 'BJ-01';
-        RAISE EXCEPTION 'ECHEC_TEST : position impossible acceptée !';
+        RAISE EXCEPTION 'ECHEC_TEST : position impossible acceptee !';
     EXCEPTION
         WHEN check_violation THEN
-            RAISE NOTICE 'OK Test 2 : latitude 999 refusée par CHECK.';
+            RAISE NOTICE 'OK Test 2 : latitude 999 refusee par CHECK.';
     END;
 
-    -- Test 3 : valeur physiquement impossible (humidité = 130 %)
+    -- Test 3 : valeur physiquement impossible (humidite = 130 %)
     BEGIN
         INSERT INTO mesure_hydro (code_capteur, instant_mesure, valeurs_hydro)
         VALUES ('BJ-01-H1', TIMESTAMP '2026-01-01 00:00:00', ROW(130, 0)::t_hydrometrie);
-        RAISE EXCEPTION 'ECHEC_TEST : humidité 130 %% acceptée !';
+        RAISE EXCEPTION 'ECHEC_TEST : humidite 130 %% acceptee !';
     EXCEPTION
         WHEN check_violation THEN
-            RAISE NOTICE 'OK Test 3 : humidité 130 %% refusée par CHECK.';
+            RAISE NOTICE 'OK Test 3 : humidite 130 %% refusee par CHECK.';
     END;
 
     -- Test 4 : mesure pour un capteur inexistant ('XX-00-H9')
     BEGIN
         INSERT INTO mesure_hydro (code_capteur, instant_mesure, valeurs_hydro)
         VALUES ('XX-00-H9', TIMESTAMP '2026-01-01 00:00:00', ROW(55, 0)::t_hydrometrie);
-        RAISE EXCEPTION 'ECHEC_TEST : mesure sur capteur inconnu acceptée !';
+        RAISE EXCEPTION 'ECHEC_TEST : mesure sur capteur inconnu acceptee !';
     EXCEPTION
         WHEN foreign_key_violation OR raise_exception THEN
-            RAISE NOTICE 'OK Test 4 : mesure sur capteur inconnu refusée.';
+            RAISE NOTICE 'OK Test 4 : mesure sur capteur inconnu refusee.';
     END;
 END $$;

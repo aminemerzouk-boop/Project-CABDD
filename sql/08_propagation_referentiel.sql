@@ -21,7 +21,7 @@
 \endif
 \if :{?pg_pass}
 \else
-    \set pg_pass 'postgresql'
+    \set pg_pass 'postgres'
 \endif
 
 -- ============================================================================

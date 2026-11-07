@@ -1,16 +1,16 @@
 -- ============================================================================
--- Script 05 : Chargement 100 % SQL des lots XML & Isolement (Étape 2)
--- Mini-projet CABDD (ING 4 GL) — Variante A (mesures à plat, attributs XML)
--- Binôme : Merzouk Amine & Megharba Samou
+-- Script 05 : Chargement 100 % SQL des lots XML & Isolement (Etape 2)
+-- Mini-projet CABDD (ING 4 GL) - Variante A (mesures a plat, attributs XML)
+-- Binome : Merzouk Amine & Megharba Samou
 -- Responsable principal : Merzouk Amine
 -- Base cible : centre
--- À lancer depuis la racine du dépôt (chemin relatif data/lots_A.xml)
+-- A lancer depuis la racine du depot (chemin relatif data/lots_A.xml)
 -- ============================================================================
 
 \connect centre
 
 -- ============================================================================
--- 1. Fonctions utilitaires de conversion sécurisée (sans lever d'exception)
+-- 1. Fonctions utilitaires de conversion securisee (sans lever d'exception)
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION to_numeric_safe(p_txt TEXT)
@@ -38,8 +38,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- ============================================================================
--- 2. Procédure SQL/PLpgSQL d'ingestion et de qualification sans aucune perte
---    (Réutilisable aussi en démonstration sur tout nouveau flux XML)
+-- 2. Procedure SQL/PLpgSQL d'ingestion et de qualification sans aucune perte
+--    (Reutilisable aussi en demonstration sur tout nouveau flux XML)
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION charger_lots_xml(p_doc_xml XML)
@@ -60,7 +60,7 @@ BEGIN
     DROP TABLE IF EXISTS tmp_mesures_extraites;
     DROP TABLE IF EXISTS tmp_mesures_qualifiees;
 
-    -- 2.1 Découpage des éléments <lot> et conservation intacte dans lot_brut
+    -- 2.1 Decoupage des elements <lot> et conservation intacte dans lot_brut
     CREATE TEMP TABLE tmp_nouveaux_lots (
         id_lot       BIGINT,
         code_station VARCHAR(10),
@@ -96,7 +96,7 @@ BEGIN
 
     SELECT count(*) INTO v_lots_inseres FROM tmp_nouveaux_lots;
 
-    -- 2.2 Extraction à plat de toutes les balises <mesure .../> des lots reçus
+    -- 2.2 Extraction a plat de toutes les balises <mesure .../> des lots recus
     CREATE TEMP TABLE tmp_mesures_extraites ON COMMIT DROP AS
     SELECT row_number() OVER (ORDER BY nl.id_lot, mx.rang_mesure) AS rid,
            nl.id_lot,
@@ -131,7 +131,7 @@ BEGIN
 
     SELECT count(*) INTO v_mesures_lues FROM tmp_mesures_extraites;
 
-    -- 2.3 Qualification selon les 5 motifs officiels de l'énoncé :
+    -- 2.3 Qualification selon les 5 motifs officiels de l'enonce :
     --     Ordre logique : capteur_inconnu -> valeur_manquante -> format_invalide
     --                     -> valeur_impossible -> doublon (en base ou intra-flux)
     CREATE TEMP TABLE tmp_mesures_qualifiees ON COMMIT DROP AS
@@ -151,7 +151,7 @@ BEGIN
            to_numeric_safe(b.humidite_txt)      AS hum_num,
            to_numeric_safe(b.pluie_txt)         AS pluie_num,
            CASE
-               -- (1) Capteur absent du référentiel
+               -- (1) Capteur absent du referentiel
                WHEN b.capteur_txt IS NULL OR btrim(b.capteur_txt) = '' OR c.code_capteur IS NULL
                    THEN 'capteur_inconnu'::motif_rejet_enum
 
@@ -170,7 +170,7 @@ BEGIN
                     ))
                    THEN 'valeur_manquante'::motif_rejet_enum
 
-               -- (3) Format invalide (date non ISO/calendrier invalide, virgule décimale, type incohérent)
+               -- (3) Format invalide (date non ISO/calendrier invalide, virgule decimale, type incoherent)
                WHEN to_timestamp_iso_safe(b.instant_txt) IS NULL
                  OR b.type_txt <> c.type_capteur::text
                  OR (c.type_capteur = 'temperature' AND to_numeric_safe(b.valeur_txt) IS NULL)
@@ -185,7 +185,7 @@ BEGIN
                     ))
                    THEN 'format_invalide'::motif_rejet_enum
 
-               -- (4) Valeur physiquement impossible (hors bornes métrologiques)
+               -- (4) Valeur physiquement impossible (hors bornes metrologiques)
                WHEN (c.type_capteur = 'temperature' AND to_numeric_safe(b.valeur_txt) NOT BETWEEN -60 AND 60)
                  OR (c.type_capteur = 'air' AND (
                         to_numeric_safe(b.pm25_txt) NOT BETWEEN 0 AND 500  OR
@@ -198,7 +198,7 @@ BEGIN
                     ))
                    THEN 'valeur_impossible'::motif_rejet_enum
 
-               -- (5a) Doublon par rapport aux mesures déjà présentes en base
+               -- (5a) Doublon par rapport aux mesures deja presentes en base
                WHEN EXISTS (
                    SELECT 1 FROM mesure m
                    WHERE m.code_capteur   = b.capteur_txt
@@ -224,24 +224,24 @@ BEGIN
     )
     UPDATE tmp_mesures_qualifiees q
        SET motif        = 'doublon'::motif_rejet_enum,
-           detail_motif = 'Mesure déjà reçue plus tôt dans le même flux XML (couple capteur/instant dupliqué).'
+           detail_motif = 'Mesure deja recue plus tot dans le meme flux XML (couple capteur/instant duplique).'
       FROM rangs_doublons d
      WHERE q.rid = d.rid
        AND d.rn > 1;
 
-    -- Renseignement d'un détail explicatif pour chaque anomalie détectée
+    -- Renseignement d'un detail explicatif pour chaque anomalie detectee
     UPDATE tmp_mesures_qualifiees
        SET detail_motif = CASE motif
-           WHEN 'capteur_inconnu'   THEN 'Capteur absent du référentiel : ' || coalesce(capteur_txt, 'NULL')
+           WHEN 'capteur_inconnu'   THEN 'Capteur absent du referentiel : ' || coalesce(capteur_txt, 'NULL')
            WHEN 'valeur_manquante'  THEN 'Attribut obligatoire manquant ou vide dans <mesure/>'
            WHEN 'format_invalide'   THEN 'Format de nombre (ex. virgule) ou timestamp ISO invalide'
-           WHEN 'valeur_impossible' THEN 'Grandeur hors limites physiques autorisées par le schéma'
-           WHEN 'doublon'           THEN coalesce(detail_motif, 'Couple (capteur, instant) déjà présent en base')
+           WHEN 'valeur_impossible' THEN 'Grandeur hors limites physiques autorisees par le schema'
+           WHEN 'doublon'           THEN coalesce(detail_motif, 'Couple (capteur, instant) deja present en base')
        END
      WHERE motif IS NOT NULL
        AND detail_motif IS NULL;
 
-    -- 2.4 Insertion des mesures rejetées dans l'espace d'isolement
+    -- 2.4 Insertion des mesures rejetees dans l'espace d'isolement
     INSERT INTO mesure_isolee (
         id_lot, code_station_lot, code_capteur_txt, instant_txt,
         mesure_xml, motif, detail_motif
@@ -253,7 +253,7 @@ BEGIN
     ORDER BY rid;
 
     -- 2.5 Insertion des mesures valides (mode ensembliste rapide + filet de
-    --     sécurité ligne par ligne si une erreur imprévue survient)
+    --     securite ligne par ligne si une erreur imprevue survient)
     BEGIN
         INSERT INTO mesure_temperature (code_capteur, instant_mesure, id_lot, temperature)
         SELECT capteur_txt, instant_ts, id_lot, temp_num
@@ -280,8 +280,8 @@ BEGIN
         WHERE motif IS NULL;
 
     EXCEPTION WHEN others THEN
-        -- Repli granulaire : si le fichier contient une anomalie totalement imprévue,
-        -- seule la mesure fautive est isolée et toutes les autres sont chargées !
+        -- Repli granulaire : si le fichier contient une anomalie totalement imprevue,
+        -- seule la mesure fautive est isolee et toutes les autres sont chargees !
         v_mesures_valides := 0;
         FOR r IN
             SELECT * FROM tmp_mesures_qualifiees WHERE motif IS NULL ORDER BY rid
@@ -306,7 +306,7 @@ BEGIN
                 VALUES (
                     r.id_lot, r.code_station_lot, r.capteur_txt, r.instant_txt,
                     r.mesure_xml, 'valeur_impossible',
-                    'Erreur imprévue interceptée à l''insertion : ' || SQLERRM
+                    'Erreur imprevue interceptee a l''insertion : ' || SQLERRM
                 );
             END;
         END LOOP;
@@ -324,7 +324,7 @@ $$ LANGUAGE plpgsql;
 --    Sans passer par les tables de mesures !
 -- ============================================================================
 
--- 3.1 Retrouver les lots contenant au moins une mesure d'un capteur donné
+-- 3.1 Retrouver les lots contenant au moins une mesure d'un capteur donne
 CREATE OR REPLACE FUNCTION lots_contenant_capteur(p_code_capteur VARCHAR)
 RETURNS TABLE (
     id_lot             BIGINT,
@@ -368,30 +368,31 @@ $$ LANGUAGE sql STABLE;
 
 -- ============================================================================
 -- 4. Chargement effectif de data/lots_A.xml (100 % SQL / psql portable)
---    \lo_import lit le fichier côté client psql (aucun problème de droits
---    NTFS sous Windows 11 ni de chemin absolu codé en dur).
+--    \lo_import lit le fichier cote client psql, puis \set xml_oid sauvegarde
+--    immediatement :LASTOID avant que la requete suivante ne le reinitialise.
 -- ============================================================================
 
 TRUNCATE mesure_temperature, mesure_air, mesure_hydro, mesure, mesure_isolee, lot_brut RESTART IDENTITY CASCADE;
 ALTER SEQUENCE seq_mesure RESTART WITH 1;
 
 \lo_import 'data/lots_A.xml'
+\set xml_oid :LASTOID
 
 CREATE TEMP TABLE tmp_fichier_lots_xml AS
-SELECT xmlparse(DOCUMENT convert_from(lo_get(:'LASTOID'::oid), 'UTF8')) AS doc_xml;
+SELECT xmlparse(DOCUMENT convert_from(lo_get(:'xml_oid'::oid), 'UTF8')) AS doc_xml;
 
-SELECT lo_unlink(:'LASTOID'::oid) AS nettoyage_objet_temporaire;
+SELECT lo_unlink(:'xml_oid'::oid) AS nettoyage_objet_temporaire;
 
--- Exécution du pipeline d'ingestion sur data/lots_A.xml
+-- Execution du pipeline d'ingestion sur data/lots_A.xml
 SELECT * FROM charger_lots_xml((SELECT doc_xml FROM tmp_fichier_lots_xml));
 
 DROP TABLE tmp_fichier_lots_xml;
 
 -- ============================================================================
--- 5. Contrôles d'exhaustivité et démonstrations XPath sur les lots bruts
+-- 5. Controles d'exhaustivite et demonstrations XPath sur les lots bruts
 -- ============================================================================
 
--- 5.1 Preuve « Aucune mesure perdue » : valides + isolées = total XML (lu en XPath)
+-- 5.1 Preuve "Aucune mesure perdue" : valides + isolees = total XML (lu en XPath)
 WITH decompte AS (
     SELECT (SELECT sum(nb_mesures) FROM compter_mesures_par_lot()) AS total_dans_lots_xml,
            (SELECT count(*) FROM mesure)                           AS mesures_valides,
@@ -404,13 +405,13 @@ SELECT total_dans_lots_xml,
        (total_dans_lots_xml = mesures_valides + mesures_isolees)  AS aucune_mesure_perdue
 FROM decompte;
 
--- 5.2 Ventilation des mesures valides par sous-table typée
+-- 5.2 Ventilation des mesures valides par sous-table typee
 SELECT 'mesure_temperature' AS table_cible, count(*) AS effectif FROM mesure_temperature
 UNION ALL SELECT 'mesure_air',   count(*) FROM mesure_air
 UNION ALL SELECT 'mesure_hydro', count(*) FROM mesure_hydro
-UNION ALL SELECT 'TOTAL VALIDES (table mère mesure)', count(*) FROM mesure;
+UNION ALL SELECT 'TOTAL VALIDES (table mere mesure)', count(*) FROM mesure;
 
--- 5.3 Ventilation des mesures isolées selon les 5 motifs de rejet
+-- 5.3 Ventilation des mesures isolees selon les 5 motifs de rejet
 SELECT motif, count(*) AS nb_rejets
 FROM mesure_isolee
 GROUP BY motif
@@ -423,8 +424,8 @@ SELECT count(*) AS nb_lots_avec_BJ_02_A1,
        max(date_envoi) AS dernier_envoi
 FROM lots_contenant_capteur('BJ-02-A1');
 
---     b) Aperçu des 5 premiers lots contenant BJ-01-H1
+--     b) Apercu des 5 premiers lots contenant BJ-01-H1
 SELECT * FROM lots_contenant_capteur('BJ-01-H1') LIMIT 5;
 
---     c) Aperçu du comptage direct des mesures des 5 premiers lots bruts
+--     c) Apercu du comptage direct des mesures des 5 premiers lots bruts
 SELECT * FROM compter_mesures_par_lot() LIMIT 5;
