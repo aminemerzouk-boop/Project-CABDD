@@ -1,115 +1,162 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="-apple-system, SF Pro Text, Helvetica Neue, Arial, sans-serif">
   <defs>
     <filter id="winShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="18" stdDeviation="28" flood-color="#000000" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="18" stdDeviation="28" flood-color="#000000" flood-opacity="0.25"/>
     </filter>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.05"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.06"/>
     </filter>
+    <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a3f4d"/><stop offset="0.55" stop-color="#2b2f3a"/><stop offset="1" stop-color="#232631"/>
+    </linearGradient>
     <linearGradient id="z1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0a84ff"/><stop offset="1" stop-color="#0055d4"/>
+      <stop offset="0" stop-color="#409cff"/><stop offset="1" stop-color="#0a63e0"/>
     </linearGradient>
     <linearGradient id="z2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#30d158"/><stop offset="1" stop-color="#1d9e45"/>
+      <stop offset="0" stop-color="#4cd964"/><stop offset="1" stop-color="#1d9e45"/>
     </linearGradient>
+    <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a84ff" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#0a84ff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- icône SF-symbol like : jauge -->
+    <g id="ic-gauge"><path d="M-8 5 A 9 9 0 0 1 8 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><line x1="0" y1="5" x2="5" y2="-2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></g>
+    <g id="ic-bolt"><path d="M2 -9 L-5 1 L-1 1 L-2 9 L5 -1 L1 -1 Z" fill="currentColor"/></g>
+    <g id="ic-pin"><path d="M0 -8 C-4.4 -8 -8 -4.4 -8 0 C-8 5.6 0 10 0 10 C0 10 8 5.6 8 0 C8 -4.4 4.4 -8 0 -8 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="0" cy="0" r="2.6" fill="currentColor"/></g>
+    <g id="ic-doc"><rect x="-6" y="-8" width="12" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="-3" y1="-3" x2="3" y2="-3" stroke="currentColor" stroke-width="1.6"/><line x1="-3" y1="1" x2="3" y2="1" stroke="currentColor" stroke-width="1.6"/></g>
+    <g id="ic-gear"><circle cx="0" cy="0" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M0 -8 V-5 M0 5 V8 M-8 0 H-5 M5 0 H8 M-5.6 -5.6 L-3.5 -3.5 M3.5 3.5 L5.6 5.6 M5.6 -5.6 L3.5 -3.5 M-3.5 3.5 L-5.6 5.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
   </defs>
 
-  <!-- bureau macOS (dégradé sombre discret) -->
-  <rect width="1280" height="800" rx="0" fill="#2b2f3a"/>
+  <!-- bureau macOS -->
+  <rect width="1280" height="800" fill="url(#wall)"/>
 
-  <!-- fenêtre macOS -->
-  <rect x="60" y="50" width="1160" height="700" rx="14" fill="#f5f5f7" filter="url(#winShadow)"/>
+  <!-- fenêtre -->
+  <rect x="60" y="46" width="1160" height="708" rx="14" fill="#f5f5f7" filter="url(#winShadow)"/>
 
-  <!-- barre de titre macOS : traffic lights + titre centré minimal -->
-  <rect x="60" y="50" width="1160" height="44" rx="14" fill="#ececee"/>
-  <rect x="60" y="72" width="1160" height="22" fill="#ececee"/>
-  <line x1="60" y1="94" x2="1220" y2="94" stroke="#d8d8dc"/>
-  <circle cx="86" cy="72" r="6" fill="#ff5f57"/>
-  <circle cx="106" cy="72" r="6" fill="#febc2e"/>
-  <circle cx="126" cy="72" r="6" fill="#28c840"/>
-  <text x="640" y="77" font-size="13" font-weight="600" fill="#3c3c43" text-anchor="middle" opacity="0.85">CABDD</text>
+  <!-- barre de titre + traffic lights + segmented control centré -->
+  <rect x="60" y="46" width="1160" height="46" rx="14" fill="#ececee"/>
+  <rect x="60" y="70" width="1160" height="22" fill="#ececee"/>
+  <line x1="60" y1="92" x2="1220" y2="92" stroke="#d8d8dc"/>
+  <circle cx="86" cy="69" r="6" fill="#ff5f57"/>
+  <circle cx="106" cy="69" r="6" fill="#febc2e"/>
+  <circle cx="126" cy="69" r="6" fill="#28c840"/>
 
-  <!-- sidebar translucide macOS -->
-  <rect x="60" y="94" width="220" height="656" fill="#e9e9ec" opacity="0.85"/>
-  <line x1="280" y1="94" x2="280" y2="750" stroke="#d8d8dc"/>
+  <!-- segmented control macOS -->
+  <rect x="540" y="55" width="200" height="28" rx="8" fill="#dcdce0"/>
+  <rect x="543" y="58" width="96" height="22" rx="6" fill="#ffffff" filter="url(#soft)"/>
+  <text x="591" y="73" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">Général</text>
+  <text x="688" y="73" font-size="12" fill="#8e8e93" text-anchor="middle">Zones</text>
 
-  <!-- icônes + labels très courts -->
-  <g font-size="13" fill="#3c3c43">
-    <rect x="76" y="122" width="188" height="34" rx="8" fill="#ffffff" filter="url(#soft)"/>
-    <circle cx="96" cy="139" r="7" fill="#0a84ff"/>
-    <text x="112" y="144" font-weight="600">Vue d'ensemble</text>
+  <!-- sidebar translucide -->
+  <rect x="60" y="92" width="224" height="662" fill="#e9e9ec" opacity="0.88"/>
+  <line x1="284" y1="92" x2="284" y2="754" stroke="#d8d8dc"/>
 
-    <circle cx="96" cy="181" r="7" fill="#8e8e93"/>
-    <text x="112" y="186">Centre</text>
+  <g color="#3c3c43" font-size="13">
+    <rect x="76" y="118" width="192" height="36" rx="9" fill="#ffffff" filter="url(#soft)"/>
+    <use href="#ic-gauge" x="96" y="136" color="#0a84ff"/>
+    <text x="114" y="141" font-weight="600" fill="#1d1d1f">Vue d'ensemble</text>
 
-    <circle cx="96" cy="217" r="7" fill="#8e8e93"/>
-    <text x="112" y="222">Zone 1</text>
+    <use href="#ic-pin" x="96" y="176" color="#8e8e93"/>
+    <text x="114" y="181" fill="#3c3c43">Centre</text>
 
-    <circle cx="96" cy="253" r="7" fill="#8e8e93"/>
-    <text x="112" y="258">Zone 2</text>
+    <use href="#ic-bolt" x="96" y="212" color="#8e8e93"/>
+    <text x="114" y="217" fill="#3c3c43">Zone 1</text>
 
-    <circle cx="96" cy="289" r="7" fill="#8e8e93"/>
-    <text x="112" y="294">Bilan XML</text>
+    <use href="#ic-bolt" x="96" y="248" color="#8e8e93"/>
+    <text x="114" y="253" fill="#3c3c43">Zone 2</text>
 
-    <circle cx="96" cy="325" r="7" fill="#8e8e93"/>
-    <text x="112" y="330">Tests</text>
+    <use href="#ic-doc" x="96" y="284" color="#8e8e93"/>
+    <text x="114" y="289" fill="#3c3c43">Bilan XML</text>
+
+    <use href="#ic-gear" x="96" y="320" color="#8e8e93"/>
+    <text x="114" y="325" fill="#3c3c43">Tests</text>
   </g>
 
-  <!-- avatar bas de sidebar -->
+  <!-- recherche compacte en haut de la sidebar -->
+  <rect x="76" y="352" width="192" height="28" rx="8" fill="#ffffff" stroke="#dcdce0"/>
+  <circle cx="92" cy="366" r="5" fill="none" stroke="#8e8e93" stroke-width="1.6"/>
+  <line x1="96" y1="370" x2="99" y2="373" stroke="#8e8e93" stroke-width="1.6"/>
+  <text x="108" y="370" font-size="12" fill="#8e8e93">Rechercher…</text>
+
+  <!-- avatar -->
   <circle cx="96" cy="716" r="14" fill="#0a84ff"/>
   <text x="96" y="721" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">S</text>
   <text x="118" y="721" font-size="12" fill="#3c3c43">Samou</text>
 
-  <!-- ================= CONTENU : gros chiffres, peu de texte ================= -->
-  <text x="308" y="140" font-size="28" font-weight="700" fill="#1d1d1f">Vue d'ensemble</text>
+  <!-- ================= CONTENU ================= -->
+  <text x="312" y="136" font-size="28" font-weight="700" fill="#1d1d1f">Vue d'ensemble</text>
+  <text x="312" y="158" font-size="13" fill="#8e8e93">Réseau de capteurs — Variante A · 2026</text>
 
-  <!-- 3 grandes cartes chiffrées -->
-  <rect x="308" y="164" width="280" height="130" rx="16" fill="#ffffff" filter="url(#soft)"/>
-  <text x="332" y="212" font-size="40" font-weight="700" fill="#1d1d1f">33 280</text>
-  <text x="332" y="240" font-size="13" fill="#8e8e93">mesures valides</text>
-  <circle cx="560" cy="192" r="4" fill="#30d158"/>
+  <!-- 3 cartes KPI avec mini sparkline -->
+  <g>
+    <rect x="312" y="178" width="276" height="136" rx="16" fill="#ffffff" filter="url(#soft)"/>
+    <text x="336" y="212" font-size="12" fill="#8e8e93">Mesures valides</text>
+    <text x="336" y="248" font-size="34" font-weight="700" fill="#1d1d1f">33 280</text>
+    <path d="M336 296 L356 290 L376 293 L396 282 L416 286 L436 276 L456 280 L476 272 L496 276 L516 268 L540 272 L564 264"
+          fill="none" stroke="#0a84ff" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M336 296 L356 290 L376 293 L396 282 L416 286 L436 276 L456 280 L476 272 L496 276 L516 268 L540 272 L564 264 L564 300 L336 300 Z"
+          fill="url(#spark)"/>
 
-  <rect x="604" y="164" width="280" height="130" rx="16" fill="#ffffff" filter="url(#soft)"/>
-  <text x="628" y="212" font-size="40" font-weight="700" fill="#1d1d1f">694</text>
-  <text x="628" y="240" font-size="13" fill="#8e8e93">mesures isolées</text>
-  <circle cx="856" cy="192" r="4" fill="#ff9f0a"/>
+    <rect x="604" y="178" width="276" height="136" rx="16" fill="#ffffff" filter="url(#soft)"/>
+    <text x="628" y="212" font-size="12" fill="#8e8e93">Mesures isolées</text>
+    <text x="628" y="248" font-size="34" font-weight="700" fill="#ff9f0a">694</text>
+    <text x="628" y="296" font-size="11" fill="#8e8e93">5 motifs de quarantine</text>
+    <rect x="628" y="278" width="228" height="6" rx="3" fill="#e5e5ea"/>
+    <rect x="628" y="278" width="8" height="6" rx="3" fill="#ff9f0a"/>
 
-  <rect x="900" y="164" width="280" height="130" rx="16" fill="#ffffff" filter="url(#soft)"/>
-  <text x="924" y="212" font-size="40" font-weight="700" fill="#1d1d1f">12</text>
-  <text x="924" y="240" font-size="13" fill="#8e8e93">stations · 2 zones</text>
-  <circle cx="1156" cy="192" r="4" fill="#0a84ff"/>
+    <rect x="896" y="178" width="276" height="136" rx="16" fill="#ffffff" filter="url(#soft)"/>
+    <text x="920" y="212" font-size="12" fill="#8e8e93">Stations actives</text>
+    <text x="920" y="248" font-size="34" font-weight="700" fill="#1d1d1f">12</text>
+    <g fill="#0a84ff"><circle cx="926" cy="288" r="4"/><circle cx="942" cy="288" r="4"/><circle cx="958" cy="288" r="4"/></g>
+    <g fill="#30d158"><circle cx="974" cy="288" r="4"/><circle cx="990" cy="288" r="4"/><circle cx="1006" cy="288" r="4"/></g>
+    <text x="1020" y="292" font-size="11" fill="#8e8e93">4 wilayas</text>
+  </g>
 
-  <!-- carte graphique : répartition zone1 / zone2, minimal -->
-  <rect x="308" y="314" width="872" height="200" rx="16" fill="#ffffff" filter="url(#soft)"/>
-  <!-- anneau -->
-  <circle cx="420" cy="414" r="56" fill="none" stroke="#e5e5ea" stroke-width="20"/>
-  <circle cx="420" cy="414" r="56" fill="none" stroke="url(#z1)" stroke-width="20"
-          stroke-dasharray="176 352" transform="rotate(-90 420 414)" stroke-linecap="round"/>
-  <circle cx="420" cy="414" r="56" fill="none" stroke="url(#z2)" stroke-width="20"
-          stroke-dasharray="176 352" stroke-dashoffset="-176" transform="rotate(-90 420 414)" stroke-linecap="round"/>
-  <text x="420" y="421" font-size="22" font-weight="700" fill="#1d1d1f" text-anchor="middle">50/50</text>
+  <!-- carte répartition zones : anneau + légende compacte -->
+  <rect x="312" y="330" width="560" height="210" rx="16" fill="#ffffff" filter="url(#soft)"/>
+  <circle cx="420" cy="435" r="62" fill="none" stroke="#e5e5ea" stroke-width="22"/>
+  <circle cx="420" cy="435" r="62" fill="none" stroke="url(#z1)" stroke-width="22"
+          stroke-dasharray="195 390" transform="rotate(-90 420 435)" stroke-linecap="round"/>
+  <circle cx="420" cy="435" r="62" fill="none" stroke="url(#z2)" stroke-width="22"
+          stroke-dasharray="195 390" stroke-dashoffset="-195" transform="rotate(-90 420 435)" stroke-linecap="round"/>
+  <text x="420" y="442" font-size="24" font-weight="700" fill="#1d1d1f" text-anchor="middle">2</text>
+  <text x="420" y="460" font-size="11" fill="#8e8e93" text-anchor="middle">zones actives</text>
 
-  <circle cx="540" cy="392" r="6" fill="#0a84ff"/>
-  <text x="556" y="397" font-size="14" fill="#3c3c43">Zone 1 — Béjaïa · Jijel</text>
-  <circle cx="540" cy="428" r="6" fill="#30d158"/>
-  <text x="556" y="433" font-size="14" fill="#3c3c43">Zone 2 — Sétif · BBA</text>
-  <text x="820" y="421" font-size="13" fill="#8e8e93" text-anchor="end">IDs impairs / pairs — unicité réseau</text>
+  <circle cx="540" cy="408" r="6" fill="#0a84ff"/>
+  <text x="556" y="413" font-size="14" fill="#3c3c43">Zone 1 · Béjaïa, Jijel</text>
+  <text x="856" y="413" font-size="13" fill="#8e8e93" text-anchor="end">IDs impairs</text>
+  <circle cx="540" cy="444" r="6" fill="#30d158"/>
+  <text x="556" y="449" font-size="14" fill="#3c3c43">Zone 2 · Sétif, BBA</text>
+  <text x="856" y="449" font-size="13" fill="#8e8e93" text-anchor="end">IDs pairs</text>
+  <line x1="540" y1="470" x2="856" y2="470" stroke="#e5e5ea"/>
+  <text x="540" y="496" font-size="12" fill="#8e8e93">Unicité des id_mesure garantie sur tout le réseau</text>
 
-  <!-- carte bilan XML : extrait très court -->
-  <rect x="308" y="534" width="420" height="190" rx="16" fill="#1d1d1f" filter="url(#soft)"/>
-  <text x="332" y="566" font-size="12" fill="#7ee787" font-family="SF Mono, Consolas, monospace">&lt;bilanjournalier debut="2026-02-01"…&gt;</text>
-  <text x="332" y="590" font-size="12" fill="#79c0ff" font-family="SF Mono, Consolas, monospace">  &lt;station code="BJ-01" zone="1"&gt;</text>
-  <text x="332" y="614" font-size="12" fill="#ffa657" font-family="SF Mono, Consolas, monospace">    &lt;grandeur nom="temperature" nbMesures="8"/&gt;</text>
-  <text x="332" y="638" font-size="12" fill="#79c0ff" font-family="SF Mono, Consolas, monospace">  &lt;/station&gt;</text>
-  <text x="332" y="662" font-size="12" fill="#7ee787" font-family="SF Mono, Consolas, monospace">&lt;/bilanjournalier&gt;</text>
-  <text x="332" y="700" font-size="11" fill="#8e8e93" font-family="SF Mono, Consolas, monospace">exécuté depuis le centre · z1_mes ∪ z2_mes</text>
+  <!-- carte bilan XML : extrait minimal -->
+  <rect x="888" y="330" width="284" height="210" rx="16" fill="#1d1d1f" filter="url(#soft)"/>
+  <circle cx="906" cy="350" r="4" fill="#ff5f57"/><circle cx="920" cy="350" r="4" fill="#febc2e"/><circle cx="934" cy="350" r="4" fill="#28c840"/>
+  <text x="906" y="384" font-size="11.5" fill="#7ee787" font-family="SF Mono, Consolas, monospace">&lt;bilanjournalier&gt;</text>
+  <text x="906" y="406" font-size="11.5" fill="#79c0ff" font-family="SF Mono, Consolas, monospace">  &lt;jour date="2026-02-01"&gt;</text>
+  <text x="906" y="428" font-size="11.5" fill="#ffa657" font-family="SF Mono, Consolas, monospace">    &lt;grandeur nom="temperature"&gt;</text>
+  <text x="906" y="450" font-size="11.5" fill="#a5d6ff" font-family="SF Mono, Consolas, monospace">      9.40 / 17.20 / 14.08</text>
+  <text x="906" y="472" font-size="11.5" fill="#79c0ff" font-family="SF Mono, Consolas, monospace">  &lt;/jour&gt;</text>
+  <text x="906" y="494" font-size="11.5" fill="#7ee787" font-family="SF Mono, Consolas, monospace">&lt;/bilanjournalier&gt;</text>
+  <text x="906" y="522" font-size="10.5" fill="#8e8e93" font-family="SF Mono, Consolas, monospace">min / max / moyenne — depuis le centre</text>
 
-  <!-- petite carte action -->
-  <rect x="748" y="534" width="432" height="190" rx="16" fill="#ffffff" filter="url(#soft)"/>
-  <rect x="772" y="560" width="180" height="38" rx="10" fill="#0a84ff"/>
-  <text x="862" y="584" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Bilan XML</text>
-  <rect x="964" y="560" width="180" height="38" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
-  <text x="1054" y="584" font-size="14" font-weight="600" fill="#0a84ff" text-anchor="middle">EXPLAIN</text>
-  <text x="772" y="640" font-size="13" fill="#8e8e93">Pruning mensuel vérifié · panne zone tolérée</text>
-  <text x="772" y="664" font-size="13" fill="#8e8e93">33 974 = 33 280 valides + 694 isolées</text>
+  <!-- rangée basse : stations + actions -->
+  <rect x="312" y="556" width="420" height="172" rx="16" fill="#ffffff" filter="url(#soft)"/>
+  <text x="336" y="586" font-size="15" font-weight="600" fill="#1d1d1f">Stations</text>
+  <g font-size="13" fill="#3c3c43">
+    <circle cx="340" cy="612" r="5" fill="#0a84ff"/><text x="356" y="617">BJ-01 · Béjaïa Aéroport</text>
+    <circle cx="340" cy="640" r="5" fill="#0a84ff"/><text x="356" y="645">JJ-02 · Jijel Port</text>
+    <circle cx="340" cy="668" r="5" fill="#30d158"/><text x="356" y="673">SE-01 · Sétif Université</text>
+    <circle cx="340" cy="696" r="5" fill="#30d158"/><text x="356" y="701">BB-03 · BBA Zone indus.</text>
+  </g>
+
+  <rect x="748" y="556" width="424" height="172" rx="16" fill="#ffffff" filter="url(#soft)"/>
+  <text x="772" y="586" font-size="15" font-weight="600" fill="#1d1d1f">Actions</text>
+  <rect x="772" y="602" width="176" height="40" rx="11" fill="#0a84ff"/>
+  <text x="860" y="627" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Bilan XML</text>
+  <rect x="960" y="602" width="176" height="40" rx="11" fill="#ffffff" stroke="#d2d2d7"/>
+  <text x="1048" y="627" font-size="14" font-weight="600" fill="#0a84ff" text-anchor="middle">EXPLAIN</text>
+  <text x="772" y="676" font-size="12" fill="#8e8e93">33 974 = 33 280 + 694 · pruning 1 partition · panne zone tolérée</text>
 </svg>
