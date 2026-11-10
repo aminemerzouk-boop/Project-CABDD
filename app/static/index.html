@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CABDD — Tableau de bord</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="window">
+  <header class="titlebar">
+    <div class="lights"><span class="l red"></span><span class="l yellow"></span><span class="l green"></span></div>
+    <div class="seg" id="seg">
+      <button class="on" data-view="general">Général</button>
+      <button data-view="zones">Zones</button>
+      <button data-view="bilan">Bilan</button>
+      <button data-view="tests">Tests</button>
+    </div>
+    <div class="title">CABDD</div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar">
+      <nav id="nav">
+        <a class="on" data-view="general">Vue d'ensemble</a>
+        <a data-view="zones">Zones 1 &amp; 2</a>
+        <a data-view="bilan">Bilan XML</a>
+        <a data-view="tests">Tests &amp; EXPLAIN</a>
+      </nav>
+      <div class="search">Rechercher…</div>
+    </aside>
+
+    <main class="content">
+      <!-- VUE GÉNÉRALE -->
+      <section id="view-general" class="view on">
+        <h1>Vue d'ensemble</h1>
+        <p class="sub">Réseau de capteurs — Variante A · 2026</p>
+        <div class="kpis">
+          <div class="card kpi"><span class="klabel">Mesures valides</span><span class="kval" id="k-valides">…</span></div>
+          <div class="card kpi"><span class="klabel">Mesures isolées</span><span class="kval warn" id="k-isolees">…</span></div>
+          <div class="card kpi"><span class="klabel">Stations · Capteurs</span><span class="kval" id="k-stations">…</span></div>
+        </div>
+        <div class="row">
+          <div class="card">
+            <h2>Répartition par zone</h2>
+            <div class="donut-wrap">
+              <svg id="donut" viewBox="0 0 120 120" width="150" height="150"></svg>
+              <div class="legend">
+                <div><i class="dot z1"></i>Zone 1 · Béjaïa, Jijel <b id="lz1"></b></div>
+                <div><i class="dot z2"></i>Zone 2 · Sétif, BBA <b id="lz2"></b></div>
+                <div class="muted">IDs impairs / pairs — unicité réseau</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Stations</h2>
+            <ul id="stations" class="stations"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- VUE ZONES -->
+      <section id="view-zones" class="view">
+        <h1>Zones 1 &amp; 2</h1>
+        <p class="sub">Mesures réellement stockées dans chaque zone (tables partitionnées par mois)</p>
+        <div class="kpis">
+          <div class="card kpi"><span class="klabel">Zone 1 (impairs)</span><span class="kval z1c" id="zone1">…</span></div>
+          <div class="card kpi"><span class="klabel">Zone 2 (pairs)</span><span class="kval z2c" id="zone2">…</span></div>
+          <div class="card kpi"><span class="klabel">Total via centre</span><span class="kval" id="ztotal">…</span></div>
+        </div>
+        <div class="card"><h2>Insertion transparente</h2>
+        <p class="muted">Un INSERT depuis le centre est routé vers la bonne zone (INSTEAD OF INSERT, script 09).
+        Teste : <code>INSERT INTO mesure_temperature (code_capteur, instant_mesure, temperature) VALUES ('BJ-01-T1', now(), 20.0);</code></p></div>
+      </section>
+
+      <!-- VUE BILAN -->
+      <section id="view-bilan" class="view">
+        <h1>Bilan journalier XML</h1>
+        <p class="sub"><code>generer_bilan_journalier_xml(debut, fin)</code> exécuté depuis le centre (z1 ∪ z2)</p>
+        <div class="bilan-bar">
+          <label>Début <input type="date" id="b-debut" value="2026-02-01"></label>
+          <label>Fin <input type="date" id="b-fin" value="2026-02-02"></label>
+          <button id="b-go" class="btn primary">Générer</button>
+        </div>
+        <div class="row">
+          <div class="card"><h2>Résumé</h2><div id="bilan-resume" class="muted">—</div></div>
+          <div class="card dark"><h2>XML</h2><pre id="bilan-xml" class="xml">…</pre></div>
+        </div>
+      </section>
+
+      <!-- VUE TESTS -->
+      <section id="view-tests" class="view">
+        <h1>Tests &amp; plans d'exécution</h1>
+        <p class="sub">Tâche 10 — pruning mensuel et résilience</p>
+        <div class="row">
+          <div class="card"><h2>EXPLAIN ANALYZE — février 2026 (centre)</h2><pre id="ex1" class="xml">…</pre></div>
+          <div class="card"><h2>EXPLAIN — requête zone 1 seule</h2><pre id="ex2" class="xml">…</pre></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
