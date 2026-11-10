@@ -78,10 +78,6 @@
   <line x1="96" y1="370" x2="99" y2="373" stroke="#8e8e93" stroke-width="1.6"/>
   <text x="108" y="370" font-size="12" fill="#8e8e93">Rechercher…</text>
 
-  <!-- avatar -->
-  <circle cx="96" cy="716" r="14" fill="#0a84ff"/>
-  <text x="96" y="721" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">S</text>
-  <text x="118" y="721" font-size="12" fill="#3c3c43">Samou</text>
 
   <!-- ================= CONTENU ================= -->
   <text x="312" y="136" font-size="28" font-weight="700" fill="#1d1d1f">Vue d'ensemble</text>
