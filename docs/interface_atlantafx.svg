@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#0b0d12" flood-opacity="0.08"/>
+    </filter>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3b8bff"/>
+      <stop offset="1" stop-color="#1f6feb"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#57d9a3"/>
+      <stop offset="1" stop-color="#2da77a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- fond général (AtlantaFX Primer Light) -->
+  <rect width="1280" height="800" fill="#f6f8fa"/>
+
+  <!-- ================= BARRE LATÉRALE ================= -->
+  <rect x="0" y="0" width="240" height="800" fill="#ffffff"/>
+  <line x1="240" y1="0" x2="240" y2="800" stroke="#d0d7de" stroke-width="1"/>
+
+  <!-- logo -->
+  <rect x="20" y="20" width="36" height="36" rx="8" fill="#1f6feb"/>
+  <text x="38" y="44" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">C</text>
+  <text x="64" y="43" font-size="17" font-weight="700" fill="#1f2328">CABDD</text>
+  <text x="64" y="60" font-size="10" fill="#656d76">Variante A — ING4 GL</text>
+
+  <!-- navigation -->
+  <text x="20" y="100" font-size="10" font-weight="600" fill="#8c959f" letter-spacing="1">NAVIGATION</text>
+
+  <!-- item actif : pilule bleue claire -->
+  <rect x="12" y="110" width="216" height="36" rx="6" fill="#ddf4ff"/>
+  <circle cx="32" cy="128" r="6" fill="#1f6feb"/>
+  <text x="48" y="132" font-size="13" font-weight="600" fill="#0969da">Tableau de bord</text>
+
+  <circle cx="32" cy="164" r="6" fill="#8c959f"/>
+  <text x="48" y="168" font-size="13" fill="#1f2328">Centre (référentiel)</text>
+
+  <circle cx="32" cy="200" r="6" fill="#8c959f"/>
+  <text x="48" y="204" font-size="13" fill="#1f2328">Zone 1 · Béjaïa/Jijel</text>
+
+  <circle cx="32" cy="236" r="6" fill="#8c959f"/>
+  <text x="48" y="240" font-size="13" fill="#1f2328">Zone 2 · Sétif/BBA</text>
+
+  <circle cx="32" cy="272" r="6" fill="#8c959f"/>
+  <text x="48" y="276" font-size="13" fill="#1f2328">Bilans XML</text>
+
+  <circle cx="32" cy="308" r="6" fill="#8c959f"/>
+  <text x="48" y="312" font-size="13" fill="#1f2328">Tests &amp; EXPLAIN</text>
+
+  <!-- bas de sidebar : utilisateur -->
+  <line x1="12" y1="736" x2="228" y2="736" stroke="#d0d7de"/>
+  <circle cx="32" cy="762" r="12" fill="#ddf4ff"/>
+  <text x="32" y="767" font-size="11" font-weight="700" fill="#0969da" text-anchor="middle">S</text>
+  <text x="52" y="759" font-size="12" font-weight="600" fill="#1f2328">Megharba Samou</text>
+  <text x="52" y="773" font-size="10" fill="#656d76">binôme avec Amine</text>
+
+  <!-- ================= EN-TÊTE ================= -->
+  <text x="264" y="42" font-size="20" font-weight="700" fill="#1f2328">Tableau de bord — Réseau de capteurs environnementaux</text>
+  <text x="264" y="62" font-size="12" fill="#656d76">Variante A : hydrométrie · partitions mensuelles · bilan journalier XML</text>
+
+  <!-- champ recherche (style AtlantaFX) -->
+  <rect x="264" y="80" width="300" height="32" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+  <circle cx="282" cy="96" r="6" fill="none" stroke="#8c959f" stroke-width="1.6"/>
+  <line x1="287" y1="101" x2="291" y2="105" stroke="#8c959f" stroke-width="1.6"/>
+  <text x="300" y="100" font-size="12" fill="#8c959f">Rechercher une station, un capteur…</text>
+
+  <!-- bouton primaire AtlantaFX -->
+  <rect x="1040" y="80" width="200" height="32" rx="6" fill="#1f6feb"/>
+  <text x="1140" y="100" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">Générer le bilan XML</text>
+
+  <!-- ================= CARTES KPI ================= -->
+  <!-- carte 1 -->
+  <rect x="264" y="132" width="228" height="96" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="284" y="158" font-size="11" font-weight="600" fill="#656d76">STATIONS</text>
+  <text x="284" y="190" font-size="26" font-weight="700" fill="#1f2328">12</text>
+  <rect x="284" y="202" width="60" height="18" rx="9" fill="#ddf4ff"/>
+  <text x="314" y="215" font-size="10" font-weight="600" fill="#0969da" text-anchor="middle">4 wilayas</text>
+
+  <!-- carte 2 -->
+  <rect x="504" y="132" width="228" height="96" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="524" y="158" font-size="11" font-weight="600" fill="#656d76">CAPTEURS</text>
+  <text x="524" y="190" font-size="26" font-weight="700" fill="#1f2328">36</text>
+  <rect x="524" y="202" width="86" height="18" rx="9" fill="#ddf4ff"/>
+  <text x="567" y="215" font-size="10" font-weight="600" fill="#0969da" text-anchor="middle">3 types · 6 seuils</text>
+
+  <!-- carte 3 -->
+  <rect x="744" y="132" width="228" height="96" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="764" y="158" font-size="11" font-weight="600" fill="#656d76">MESURES VALIDES</text>
+  <text x="764" y="190" font-size="26" font-weight="700" fill="#1f2328">33 280</text>
+  <rect x="764" y="202" width="86" height="18" rx="9" fill="#dafbe1"/>
+  <text x="807" y="215" font-size="10" font-weight="600" fill="#1a7f37" text-anchor="middle">réparties z1 + z2</text>
+
+  <!-- carte 4 (alerte) -->
+  <rect x="984" y="132" width="256" height="96" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="1004" y="158" font-size="11" font-weight="600" fill="#656d76">MESURES ISOLÉES (QUARANTINE)</text>
+  <text x="1004" y="190" font-size="26" font-weight="700" fill="#cf222e">694</text>
+  <rect x="1004" y="202" width="150" height="18" rx="9" fill="#ffebe9"/>
+  <text x="1079" y="215" font-size="10" font-weight="600" fill="#cf222e" text-anchor="middle">5 motifs · 100 % isolées</text>
+
+  <!-- ================= GRAPHIQUE PAR ZONE ================= -->
+  <rect x="264" y="244" width="480" height="270" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="284" y="272" font-size="14" font-weight="700" fill="#1f2328">Mesures par zone (vue centre, transparente)</text>
+  <text x="284" y="290" font-size="11" fill="#656d76">v_mesure_plat = z1_mes UNION ALL z2_mes</text>
+
+  <!-- barres -->
+  <line x1="304" y1="470" x2="704" y2="470" stroke="#d0d7de"/>
+  <rect x="330" y="340" width="90" height="130" rx="4" fill="url(#barGrad)"/>
+  <text x="375" y="332" font-size="13" font-weight="700" fill="#1f2328" text-anchor="middle">zone 1</text>
+  <text x="375" y="490" font-size="11" fill="#656d76" text-anchor="middle">Béjaïa · Jijel (IDs impairs)</text>
+  <rect x="480" y="310" width="90" height="160" rx="4" fill="url(#barGrad2)"/>
+  <text x="525" y="302" font-size="13" font-weight="700" fill="#1f2328" text-anchor="middle">zone 2</text>
+  <text x="525" y="490" font-size="11" fill="#656d76" text-anchor="middle">Sétif · BBA (IDs pairs)</text>
+  <rect x="620" y="380" width="90" height="90" rx="4" fill="#d0d7de"/>
+  <text x="665" y="372" font-size="13" font-weight="700" fill="#656d76" text-anchor="middle">centre</text>
+  <text x="665" y="490" font-size="11" fill="#656d76" text-anchor="middle">0 stocké (vue globale)</text>
+
+  <!-- ================= TABLE STATIONS ================= -->
+  <rect x="264" y="530" width="480" height="250" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="284" y="558" font-size="14" font-weight="700" fill="#1f2328">Stations du référentiel</text>
+
+  <!-- en-tête tableau -->
+  <rect x="284" y="570" width="440" height="26" rx="4" fill="#f6f8fa"/>
+  <text x="296" y="587" font-size="11" font-weight="600" fill="#656d76">CODE</text>
+  <text x="380" y="587" font-size="11" font-weight="600" fill="#656d76">NOM</text>
+  <text x="600" y="587" font-size="11" font-weight="600" fill="#656d76">ZONE</text>
+
+  <text x="296" y="615" font-size="12" fill="#1f2328">BJ-01</text>
+  <text x="380" y="615" font-size="12" fill="#1f2328">Béjaïa Aéroport</text>
+  <rect x="592" y="602" width="52" height="18" rx="9" fill="#ddf4ff"/>
+  <text x="618" y="615" font-size="10" font-weight="600" fill="#0969da" text-anchor="middle">zone 1</text>
+
+  <text x="296" y="645" font-size="12" fill="#1f2328">JJ-02</text>
+  <text x="380" y="645" font-size="12" fill="#1f2328">Jijel Port</text>
+  <rect x="592" y="632" width="52" height="18" rx="9" fill="#ddf4ff"/>
+  <text x="618" y="645" font-size="10" font-weight="600" fill="#0969da" text-anchor="middle">zone 1</text>
+
+  <text x="296" y="675" font-size="12" fill="#1f2328">SE-01</text>
+  <text x="380" y="675" font-size="12" fill="#1f2328">Sétif Université</text>
+  <rect x="592" y="662" width="52" height="18" rx="9" fill="#dafbe1"/>
+  <text x="618" y="675" font-size="10" font-weight="600" fill="#1a7f37" text-anchor="middle">zone 2</text>
+
+  <text x="296" y="705" font-size="12" fill="#1f2328">BB-03</text>
+  <text x="380" y="705" font-size="12" fill="#1f2328">BBA Zone industrielle</text>
+  <rect x="592" y="692" width="52" height="18" rx="9" fill="#dafbe1"/>
+  <text x="618" y="705" font-size="10" font-weight="600" fill="#1a7f37" text-anchor="middle">zone 2</text>
+
+  <text x="296" y="745" font-size="11" fill="#656d76">… 12 stations au total — propagation FDW centre → zones (script 08)</text>
+  <text x="296" y="765" font-size="11" fill="#656d76">Insertion transparente : INSTEAD OF INSERT route vers la bonne zone (script 09)</text>
+
+  <!-- ================= APERÇU XML ================= -->
+  <rect x="760" y="244" width="480" height="270" rx="8" fill="#1f2328" filter="url(#cardShadow)"/>
+  <circle cx="780" cy="266" r="5" fill="#ff5f57"/>
+  <circle cx="798" cy="266" r="5" fill="#febc2e"/>
+  <circle cx="816" cy="266" r="5" fill="#28c840"/>
+  <text x="836" y="270" font-size="11" fill="#8c959f" font-family="Consolas, monospace">bilan_journalier.xml — generer_bilan_journalier_xml('2026-02-01','2026-02-07')</text>
+  <text x="780" y="296" font-size="11" fill="#7ee787" font-family="Consolas, monospace">&lt;bilanjournalier debut="2026-02-01" fin="2026-02-07"&gt;</text>
+  <text x="796" y="316" font-size="11" fill="#79c0ff" font-family="Consolas, monospace">&lt;jour date="2026-02-01"&gt;</text>
+  <text x="812" y="336" font-size="11" fill="#79c0ff" font-family="Consolas, monospace">&lt;station code="BJ-01" nom="Béjaïa Aéroport" zone="1"&gt;</text>
+  <text x="828" y="356" font-size="11" fill="#ffa657" font-family="Consolas, monospace">&lt;grandeur nom="temperature" unite="°C" nbMesures="8"&gt;</text>
+  <text x="844" y="376" font-size="11" fill="#a5d6ff" font-family="Consolas, monospace">&lt;min&gt;9.40&lt;/min&gt; &lt;max&gt;17.20&lt;/max&gt; &lt;moyenne&gt;14.08&lt;/moyenne&gt;</text>
+  <text x="828" y="396" font-size="11" fill="#ffa657" font-family="Consolas, monospace">&lt;/grandeur&gt;</text>
+  <text x="812" y="416" font-size="11" fill="#79c0ff" font-family="Consolas, monospace">&lt;/station&gt;</text>
+  <text x="796" y="436" font-size="11" fill="#79c0ff" font-family="Consolas, monospace">&lt;/jour&gt; … &lt;/bilanjournalier&gt;</text>
+  <text x="780" y="470" font-size="11" fill="#8c959f" font-family="Consolas, monospace">Well-formed ✓ — 7 jours × 12 stations × 6 grandeurs (min/max/moyenne/nb)</text>
+  <text x="780" y="492" font-size="11" fill="#8c959f" font-family="Consolas, monospace">Exécuté depuis le centre sur les foreign tables z1_mes / z2_mes</text>
+
+  <!-- ================= ACTIONS TÂCHE 10 ================= -->
+  <rect x="760" y="530" width="480" height="120" rx="8" fill="#ffffff" stroke="#d0d7de" filter="url(#cardShadow)"/>
+  <text x="780" y="558" font-size="14" font-weight="700" fill="#1f2328">Plans d'exécution &amp; résilience (tâche 10)</text>
+
+  <rect x="780" y="572" width="140" height="30" rx="6" fill="#1f6feb"/>
+  <text x="850" y="591" font-size="11" font-weight="600" fill="#ffffff" text-anchor="middle">EXPLAIN ANALYZE</text>
+
+  <rect x="932" y="572" width="150" height="30" rx="6" fill="#ffffff" stroke="#1f6feb"/>
+  <text x="1007" y="591" font-size="11" font-weight="600" fill="#0969da" text-anchor="middle">Pruning : 1 partition</text>
+
+  <rect x="1094" y="572" width="126" height="30" rx="6" fill="#cf222e"/>
+  <text x="1157" y="591" font-size="11" font-weight="600" fill="#ffffff" text-anchor="middle">Panne zone 2</text>
+
+  <text x="780" y="626" font-size="11" fill="#656d76">Requête sur févr. 2026 → seule la partition mesure_*_2026_02 est scannée (EXPLAIN vérifié).</text>
+  <text x="780" y="644" font-size="11" fill="#656d76">Zone 2 indisponible → le centre ne voit que zone 1, aucune perte de schéma.</text>
+</svg>
